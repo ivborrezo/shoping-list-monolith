@@ -1,10 +1,10 @@
-package es.ivborrezo.shopinglistmonolith;
+package es.ivborrezo.shoppinglistmonolith;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ShopingListMonolithApplicationTests {
+class ShoppingListMonolithApplicationTests {
 
 	@Test
 	void contextLoads() {

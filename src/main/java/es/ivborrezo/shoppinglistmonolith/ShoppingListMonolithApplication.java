@@ -1,13 +1,13 @@
-package es.ivborrezo.shopinglistmonolith;
+package es.ivborrezo.shoppinglistmonolith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ShopingListMonolithApplication {
+public class ShoppingListMonolithApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ShopingListMonolithApplication.class, args);
+		SpringApplication.run(ShoppingListMonolithApplication.class, args);
 	}
 
 }

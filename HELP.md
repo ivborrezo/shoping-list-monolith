@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'es.ivborrezo.shoping-list-monolith' is invalid and this project uses 'es.ivborrezo.shopinglistmonolith' instead.
+* The original package name 'es.ivborrezo.shopping-list-monolith' is invalid and this project uses 'es.ivborrezo.shoppinglistmonolith' instead.
 
 # Getting Started
 

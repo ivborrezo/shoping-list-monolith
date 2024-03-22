@@ -1,2 +1,2 @@
-# shoping-list-monolith
-Shoping list backed with a monolithic architecture
+# shopping-list-monolith
+Shopping list backed with a monolithic architecture
