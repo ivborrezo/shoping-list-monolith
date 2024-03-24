@@ -4,7 +4,6 @@ import java.util.List;
 
 import es.ivborrezo.shoppinglistmonolith.category.Category;
 import es.ivborrezo.shoppinglistmonolith.listproduct.ListProduct;
-import es.ivborrezo.shoppinglistmonolith.shoppinglist.ShoppingList;
 import es.ivborrezo.shoppinglistmonolith.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +14,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Entity
@@ -26,12 +26,15 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long productId;
 
+	@NotBlank(message = "Name can not be null")
 	private String name;
 
 	private String description;
 
+	@Positive(message = "Price must be positive")
 	private double price;
 
+	@NotBlank(message = "Brand can not be null")
 	private String brand;
 
 	private String groceryChain;
