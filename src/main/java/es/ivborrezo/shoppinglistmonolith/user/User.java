@@ -47,10 +47,10 @@ public class User {
 	@NotBlank(message = "LastName can not be null")
 	private String lastName;
 
-	@NotBlank(message = "DateOfBird can not be null")
+	@NotBlank(message = "DateOfBirth can not be null")
 	@Past(message = "Date of birth must be in the past")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDateTime dateOfBird;
+	private LocalDateTime dateOfBirth;
 
 	@Pattern(regexp = "^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$", message = "Invalid mobile phone format")
 	private String phoneNumber;
