@@ -2,13 +2,15 @@ package es.ivborrezo.shoppinglistmonolith.category;
 
 import java.util.List;
 
+import es.ivborrezo.shoppinglistmonolith.Color.Color;
 import es.ivborrezo.shoppinglistmonolith.product.Product;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
@@ -21,7 +23,8 @@ public class Category {
 	
 	private String name;
 	
-	private String color;
+	@Enumerated(EnumType.STRING)
+	private Color color;
 	
 	@ManyToMany(mappedBy = "categoryList")
 	private List<Product> productList;
