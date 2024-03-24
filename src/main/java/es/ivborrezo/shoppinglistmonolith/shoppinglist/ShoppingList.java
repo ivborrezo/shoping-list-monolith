@@ -5,6 +5,7 @@ import java.util.List;
 
 import es.ivborrezo.shoppinglistmonolith.listproduct.ListProduct;
 import es.ivborrezo.shoppinglistmonolith.user.User;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 
+@Entity
 @Data
 public class ShoppingList {
 
