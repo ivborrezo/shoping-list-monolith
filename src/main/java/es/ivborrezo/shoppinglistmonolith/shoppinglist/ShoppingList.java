@@ -1,6 +1,6 @@
 package es.ivborrezo.shoppinglistmonolith.shoppinglist;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,7 +32,7 @@ public class ShoppingList {
 	
 	@NotNull(message = "CreationDate can not be null")
 	@DateTimeFormat(pattern = "yyyy-MM-dd") 
-	private Date creationDate;
+	private LocalDateTime creationDate;
 	
 	@ManyToOne
 	@JoinColumn(name = "owner_id")
