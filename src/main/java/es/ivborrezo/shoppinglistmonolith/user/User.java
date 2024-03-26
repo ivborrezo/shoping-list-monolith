@@ -1,6 +1,6 @@
 package es.ivborrezo.shoppinglistmonolith.user;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -50,7 +50,7 @@ public class User {
 	@NotBlank(message = "DateOfBirth can not be null")
 	@Past(message = "Date of birth must be in the past")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDateTime dateOfBirth;
+	private LocalDate dateOfBirth;
 
 	@Pattern(regexp = "^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$", message = "Invalid mobile phone format")
 	private String phoneNumber;

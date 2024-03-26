@@ -20,7 +20,7 @@ public class Category {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long categoryId;
+	private Long categoryId;
 	
 	@NotBlank(message = "Name can not be null")
 	private String name;
