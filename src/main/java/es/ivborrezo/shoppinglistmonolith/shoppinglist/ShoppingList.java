@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -24,23 +25,24 @@ import lombok.Data;
 public class ShoppingList {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name = "shopping_list_shopping_list_id_seq", sequenceName = "shopping_list_shopping_list_id_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "shopping_list_shopping_list_id_seq")
 	private Long shoppingListId;
-	
+
 	@NotEmpty(message = "Name can not be null")
 	private String name;
-	
+
 	@NotNull(message = "CreationDate can not be null")
-	@DateTimeFormat(pattern = "yyyy-MM-dd") 
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDateTime creationDate;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "owner_id")
 	private User owner;
-	
+
 	@OneToMany(mappedBy = "shoppingList")
 	private List<ListProduct> listProducts;
-	
+
 	@ManyToMany(mappedBy = "subscribedShoppingLists")
 	private List<User> subscribedUserList;
 }

@@ -14,6 +14,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
@@ -23,7 +24,8 @@ import lombok.Data;
 public class Product {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name = "product_product_id_seq", sequenceName = "product_product_id_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "product_product_id_seq")
 	private Long productId;
 
 	@NotBlank(message = "Name can not be null")
@@ -47,11 +49,7 @@ public class Product {
 	private List<ListProduct> ListProducts;
 
 	@ManyToMany
-	@JoinTable(
-			name = "product_category", 
-			joinColumns = @JoinColumn(name = "product_id"), 
-			inverseJoinColumns = @JoinColumn(name = "category_id")
-	)
+	@JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private List<Category> categoryList;
 
 }

@@ -11,23 +11,25 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
 @Data
 public class Category {
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name = "category_category_id_seq", sequenceName = "category_category_id_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "category_category_id_seq")
 	private Long categoryId;
-	
+
 	@NotBlank(message = "Name can not be null")
 	private String name;
-	
+
 	@Enumerated(EnumType.STRING)
 	private Color color;
-	
+
 	@ManyToMany(mappedBy = "categoryList")
 	private List<Product> productList;
 }
