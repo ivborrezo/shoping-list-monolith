@@ -19,13 +19,20 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
 	@Id
@@ -49,7 +56,7 @@ public class User {
 	@NotBlank(message = "LastName can not be null")
 	private String lastName;
 
-	@NotBlank(message = "DateOfBirth can not be null")
+	@NotNull(message = "DateOfBirth can not be null")
 	@Past(message = "Date of birth must be in the past")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateOfBirth;
