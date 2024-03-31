@@ -1,6 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -56,14 +59,13 @@ public class UserServiceTest {
 	}
 
 	@Test
-	void UserService_GetUserById_ReturnNull() {
+	void UserService_GetUserById_ThrowsExceptionIfNotFound() {
 		// Arrange
-		Long id = elyoya.getUserId();
+		Long id = 1L;
 		when(userRepository.findById(id)).thenReturn(Optional.empty());
 
 		// Act and Assert
-		User obtainedUser = userService.getUserById(id);
-		assertThat(obtainedUser).isNull();
+		assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(id));
 		verify(userRepository, times(1)).findById(id);
 	}
 }
