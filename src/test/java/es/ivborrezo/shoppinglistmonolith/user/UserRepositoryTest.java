@@ -26,13 +26,15 @@ public class UserRepositoryTest {
 	@BeforeEach
 	public void setupTestData() {
 		// Arrange: Create and persist a couple of user using EntityManager
-		LocalDate date = LocalDate.of(2000, 3, 18);
+		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
+		LocalDate dateMyrwn = LocalDate.of(2001, 3, 18);
+		
 
 		elyoya = User.builder().userName("Elyoya").email("elyoya@gmail.com").firstName("El").lastName("Yoya")
-				.password("asd").dateOfBirth(date).build();
+				.password("asd").dateOfBirth(dateEloya).build();
 		
 		myrwn = User.builder().userName("Myrwn").email("myrwn@gmail.com").firstName("Myr").lastName("Wn")
-				.password("asd").dateOfBirth(date).build();
+				.password("asd").dateOfBirth(dateMyrwn).build();
 
 		entityManager.persistAndFlush(elyoya);
 		entityManager.persistAndFlush(myrwn);
