@@ -2,8 +2,12 @@
 ------ONLY FOR H2 DATABASE------
 --------------------------------
 
+CREATE SEQUENCE users_user_id_seq
+	START WITH 1
+	INCREMENT BY 1;
+
 CREATE TABLE users (
-    user_id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT default NEXTVAL('users_user_id_seq') PRIMARY KEY,
     user_name VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
     password VARCHAR NOT NULL,
@@ -12,10 +16,14 @@ CREATE TABLE users (
     date_of_birth DATE NOT NULL,
     phone_number VARCHAR,
     CONSTRAINT valid_phone_number CHECK (phone_number ~ '^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$')
-);
+);	
+
+CREATE SEQUENCE product_product_id_seq
+	START WITH 1
+	INCREMENT BY 1;
 
 CREATE TABLE product (
-    product_id BIGSERIAL PRIMARY KEY,
+    product_id BIGINT default NEXTVAL('product_product_id_seq') PRIMARY KEY,
     name VARCHAR NOT NULL,
     description TEXT,
     price DOUBLE PRECISION NOT NULL CHECK (price > 0),
@@ -24,15 +32,23 @@ CREATE TABLE product (
     user_id BIGINT REFERENCES users(user_id)
 );
 
+CREATE SEQUENCE shopping_list_shopping_list_id_seq
+	START WITH 1
+	INCREMENT BY 1;
+
 CREATE TABLE shopping_list (
-    shopping_list_id BIGSERIAL PRIMARY KEY,
+    shopping_list_id BIGINT default NEXTVAL('shopping_list_shopping_list_id_seq') PRIMARY KEY,
     name VARCHAR NOT NULL,
     creation_date TIMESTAMP NOT NULL,
     owner_id BIGINT REFERENCES users(user_id)
 );
 
+CREATE SEQUENCE category_category_id_seq
+	START WITH 1
+	INCREMENT BY 1;
+
 CREATE TABLE category (
-    category_id BIGSERIAL PRIMARY KEY,
+    category_id BIGINT default NEXTVAL('category_category_id_seq') PRIMARY KEY,
     name VARCHAR NOT NULL,
     color VARCHAR
 );
