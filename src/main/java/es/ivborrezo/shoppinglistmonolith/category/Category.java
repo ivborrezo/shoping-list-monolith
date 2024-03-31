@@ -2,7 +2,7 @@ package es.ivborrezo.shoppinglistmonolith.category;
 
 import java.util.List;
 
-import es.ivborrezo.shoppinglistmonolith.Color.Color;
+import es.ivborrezo.shoppinglistmonolith.color.Color;
 import es.ivborrezo.shoppinglistmonolith.product.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
