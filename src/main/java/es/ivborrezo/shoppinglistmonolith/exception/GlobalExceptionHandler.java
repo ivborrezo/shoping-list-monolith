@@ -20,12 +20,27 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ErrorMessage> handleResourceNotFoundException(
 			ResourceNotFoundException resourceNotFoundException, WebRequest webRequest) {
-		HttpStatus notFound = HttpStatus.NOT_FOUND;
+		
+		HttpStatus status = HttpStatus.NOT_FOUND;
 		String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
-		ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), notFound.value(), notFound.getReasonPhrase(),
+		
+		ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), status.value(), status.getReasonPhrase(),
 				resourceNotFoundException.getMessage(), path);
 
-		return new ResponseEntity<>(errorMessage, notFound);
+		return new ResponseEntity<>(errorMessage, status);
 
+	}
+
+	// Handle global exceptions
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorMessage> handleGlobalException(Exception exception, WebRequest webRequest) {
+
+		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+		String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
+		
+		ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), status.value(), status.getReasonPhrase(),
+				exception.getMessage(), path);
+
+		return new ResponseEntity<>(errorMessage, status);
 	}
 }
