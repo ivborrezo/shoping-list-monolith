@@ -7,11 +7,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import es.ivborrezo.shoppinglistmonolith.listproduct.ListProduct;
 import es.ivborrezo.shoppinglistmonolith.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -40,9 +42,18 @@ public class ShoppingList {
 	@JoinColumn(name = "owner_id")
 	private User owner;
 
-	@OneToMany(mappedBy = "shoppingList")
+	@OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ListProduct> listProducts;
 
-	@ManyToMany(mappedBy = "subscribedShoppingLists")
+//	@ManyToMany(mappedBy = "subscribedShoppingLists")
+	@ManyToMany(cascade =
+        {
+                CascadeType.DETACH,
+                CascadeType.MERGE,
+                CascadeType.REFRESH,
+                CascadeType.PERSIST
+        },
+        targetEntity = User.class)
+	@JoinTable(name = "user_shopping_list_subscription", joinColumns = @JoinColumn(name = "shopping_list_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private List<User> subscribedUserList;
 }

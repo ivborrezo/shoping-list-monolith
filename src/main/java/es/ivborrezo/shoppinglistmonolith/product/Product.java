@@ -5,6 +5,7 @@ import java.util.List;
 import es.ivborrezo.shoppinglistmonolith.category.Category;
 import es.ivborrezo.shoppinglistmonolith.listproduct.ListProduct;
 import es.ivborrezo.shoppinglistmonolith.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,7 +46,7 @@ public class Product {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@OneToMany(mappedBy = "product")
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ListProduct> ListProducts;
 
 	@ManyToMany

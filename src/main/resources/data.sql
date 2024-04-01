@@ -24,7 +24,7 @@ VALUES
 INSERT INTO shopping_list (name, creation_date, owner_id)
 VALUES 
     ('Grocery List', '2024-03-25 10:00:00', 1),
-    ('Tech Gadgets', '2024-03-26 15:30:00', 2),
+    ('Tech Gadgets', '2024-03-26 15:30:00', 1),
     ('Fitness Gear', '2024-03-27 09:45:00', 3),
     ('Home Essentials', '2024-03-28 11:20:00', 4),
     ('Travel Packing', '2024-03-29 14:00:00', 5);
@@ -60,7 +60,14 @@ VALUES
 INSERT INTO user_shopping_list_subscription (user_id, shopping_list_id)
 VALUES 
     (1, 2),
+    (1, 3),
+    (1, 4),
     (2, 3),
+    (2, 4),
+    (3, 1),
+    (3, 2),
     (3, 4),
+    (4, 1),
+    (4, 2),
     (4, 5),
     (5, 1);

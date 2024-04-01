@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import es.ivborrezo.shoppinglistmonolith.product.Product;
 import es.ivborrezo.shoppinglistmonolith.shoppinglist.ShoppingList;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -64,13 +65,20 @@ public class User {
 	@Pattern(regexp = "^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$", message = "Invalid mobile phone format")
 	private String phoneNumber;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Product> productList;
 
-	@OneToMany(mappedBy = "owner")
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ShoppingList> shoppingLists;
 
-	@ManyToMany
+	@ManyToMany(cascade =
+        {
+                CascadeType.DETACH,
+                CascadeType.MERGE,
+                CascadeType.REFRESH,
+                CascadeType.PERSIST
+        },
+        targetEntity = ShoppingList.class)
 	@JoinTable(name = "user_shopping_list_subscription", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "shopping_list_id"))
 	private List<ShoppingList> subscribedShoppingLists;
 }
