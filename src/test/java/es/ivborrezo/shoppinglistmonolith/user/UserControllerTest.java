@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
+
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
@@ -59,6 +61,36 @@ public class UserControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(id))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.userName").value("Elyoya"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("elyoya@gmail.com"));
+
+	}
+
+	@Test
+	void UserController_GetUserById_WhenNotFoudReturnResponseEntity404() throws Exception {
+		// Arrange
+		Long id = 1L;
+		when(userService.getUserById(id)).thenThrow(ResourceNotFoundException.class);
+
+		// Act
+		ResultActions response = mockMvc
+				.perform(MockMvcRequestBuilders.get("/api/v1/users/{id}", id).contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isNotFound());
+
+	}
+
+	@Test
+	void UserController_GetUserById_WhenBadUrlResponseEntity500() throws Exception {
+		// Arrange
+		Long id = 1L;
+		when(userService.getUserById(id)).thenThrow(NumberFormatException.class);
+
+		// Act
+		ResultActions response = mockMvc
+				.perform(MockMvcRequestBuilders.get("/api/v1/users/{id}", id).contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
 	}
 }
