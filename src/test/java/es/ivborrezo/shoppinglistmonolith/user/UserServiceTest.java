@@ -1,6 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,10 +37,10 @@ public class UserServiceTest {
 		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
 		LocalDate dateMyrwn = LocalDate.of(2001, 3, 18);
 
-		elyoya = User.builder().userName("Elyoya").email("elyoya@gmail.com").firstName("El").lastName("Yoya")
+		elyoya = User.builder().userId(1L).userName("Elyoya").email("elyoya@gmail.com").firstName("El").lastName("Yoya")
 				.password("asd").dateOfBirth(dateEloya).build();
 
-		myrwn = User.builder().userName("Myrwn").email("myrwn@gmail.com").firstName("Myr").lastName("Wn")
+		myrwn = User.builder().userId(2L).userName("Myrwn").email("myrwn@gmail.com").firstName("Myr").lastName("Wn")
 				.password("asd").dateOfBirth(dateMyrwn).build();
 	}
 
@@ -61,11 +62,47 @@ public class UserServiceTest {
 	@Test
 	void UserService_GetUserById_ThrowsExceptionIfNotFound() {
 		// Arrange
-		Long id = 1L;
+		Long id = elyoya.getUserId();
 		when(userRepository.findById(id)).thenReturn(Optional.empty());
 
 		// Act and Assert
 		assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(id));
 		verify(userRepository, times(1)).findById(id);
 	}
+	
+	@Test
+	void UserService_DeleteUserById_DeleteCalled() {
+		//Arrange
+		Long id = elyoya.getUserId();
+		
+		when(userRepository.findById(id)).thenReturn(Optional.ofNullable(elyoya));
+		
+		//Act
+		userService.deleteUserById(id);
+		
+		//Assert
+		assertAll(() -> {
+			verify(userRepository, times(1)).findById(id);
+			verify(userRepository, times(1)).deleteById(id);
+		});
+	}
+	
+	@Test
+	void UserService_DeleteUserById_ThrowsExceptionIfNotFound() {
+		//Arrange
+		Long id = 1L;
+		
+		when(userRepository.findById(id)).thenReturn(Optional.empty());
+		
+		//Act and Assert
+		assertThrows(ResourceNotFoundException.class, () -> 
+			userService.deleteUserById(id));
+		
+		assertAll(() -> {
+			verify(userRepository, times(1)).findById(id);
+			verify(userRepository, times(0)).deleteById(id);
+		});
+	}
+	
+	
 }

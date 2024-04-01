@@ -1,5 +1,6 @@
 package es.ivborrezo.shoppinglistmonolith.user;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,7 +32,7 @@ public class UserControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
 	@MockBean
 	private UserOutputDTOMapper userOutputDTOMapper;
 
@@ -54,15 +56,15 @@ public class UserControllerTest {
 		Long id = 1L;
 		elyoya.setUserId(id);
 		when(userService.getUserById(id)).thenReturn(elyoya);
-		
-		UserOutputDTO userOutputDTO = new UserOutputDTO(elyoya.getUserId(),
-				elyoya.getUserName(),
-				elyoya.getEmail(), 
+
+		UserOutputDTO userOutputDTO = new UserOutputDTO(elyoya.getUserId(), 
+				elyoya.getUserName(), 
+				elyoya.getEmail(),
 				elyoya.getFirstName(), 
 				elyoya.getLastName(), 
 				elyoya.getDateOfBirth(), 
 				elyoya.getPhoneNumber());
-		
+
 		when(userOutputDTOMapper.apply(elyoya)).thenReturn(userOutputDTO);
 
 		// Act
@@ -105,6 +107,35 @@ public class UserControllerTest {
 
 		// Assert
 		response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+	}
+
+	@Test
+	void UserController_DeleteUserById_ReturnResponseEntity204Void() throws Exception {
+		// Arrange
+		Long id = 1L;
+		Mockito.doNothing().when(userService).deleteUserById(id);
+
+		// Act
+		ResultActions response = mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/v1/users/{id}", id).contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	void UserController_DeleteUserById_WhenNotFoudReturnResponseEntity404() throws Exception {
+		// Arrange
+		Long id = 1L;
+		doThrow(ResourceNotFoundException.class).when(userService).deleteUserById(id);
+
+		// Act
+		ResultActions response = mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/v1/users/{id}", id).contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isNotFound());
 
 	}
 }
