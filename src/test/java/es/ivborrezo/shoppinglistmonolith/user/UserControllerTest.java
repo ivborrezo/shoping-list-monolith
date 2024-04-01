@@ -30,6 +30,9 @@ public class UserControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@MockBean
+	private UserOutputDTOMapper userOutputDTOMapper;
 
 	@MockBean
 	private UserService userService;
@@ -51,6 +54,16 @@ public class UserControllerTest {
 		Long id = 1L;
 		elyoya.setUserId(id);
 		when(userService.getUserById(id)).thenReturn(elyoya);
+		
+		UserOutputDTO userOutputDTO = new UserOutputDTO(elyoya.getUserId(),
+				elyoya.getUserName(),
+				elyoya.getEmail(), 
+				elyoya.getFirstName(), 
+				elyoya.getLastName(), 
+				elyoya.getDateOfBirth(), 
+				elyoya.getPhoneNumber());
+		
+		when(userOutputDTOMapper.apply(elyoya)).thenReturn(userOutputDTO);
 
 		// Act
 		ResultActions response = mockMvc
@@ -58,8 +71,9 @@ public class UserControllerTest {
 
 		// Assert
 		response.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(id))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.userName").value("Elyoya"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Elyoya"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("elyoya@gmail.com"));
 
 	}
