@@ -1,9 +1,13 @@
 package es.ivborrezo.shoppinglistmonolith.user;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -40,30 +47,53 @@ public class UserControllerTest {
 	private UserService userService;
 
 	private User elyoya;
+	private User myrwn;
 
 	@BeforeEach
 	public void setupTestData() {
 		// Arrange
 		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
+		LocalDate dateMyrwn = LocalDate.of(2001, 3, 18);
 
-		elyoya = User.builder().userName("Elyoya").email("elyoya@gmail.com").firstName("El").lastName("Yoya")
-				.password("asd").dateOfBirth(dateEloya).build();
+		elyoya = User.builder().userId(1L).userName("Elyoya").email("elyoya@gmail.com").firstName("El").lastName("Yoya")
+				.password("asd").dateOfBirth(dateEloya).phoneNumber("928374650").build();
+
+		myrwn = User.builder().userId(2L).userName("Myrwn").email("myrwn@gmail.com").firstName("Myr").lastName("Wn")
+				.password("asd").dateOfBirth(dateMyrwn).build();
+	}
+
+	@Test
+	void UserController_GetUsersBySpecification_ReturnResponseEntity200WithPageOfUsers() throws Exception {
+		// Arrange
+		List<User> userList = Arrays.asList(elyoya, myrwn);
+		// Create a PageRequest object to represent page settings (page number, page
+		// size)
+		PageRequest pageRequest = PageRequest.of(0, userList.size());
+
+		// Create a Page<User> using PageImpl with the userList and pageRequest
+		Page<User> userPage = new PageImpl<>(userList, pageRequest, userList.size());
+
+		when(userService.getUsersBySpecification(any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
+				.thenReturn(userPage);
+
+		// Act
+		ResultActions response = mockMvc
+				.perform(MockMvcRequestBuilders.get("/api/v1/users").contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(2));
+
 	}
 
 	@Test
 	void UserController_GetUserById_ReturnResponseEntity200WithUser() throws Exception {
 		// Arrange
 		Long id = 1L;
-		elyoya.setUserId(id);
 		when(userService.getUserById(id)).thenReturn(elyoya);
 
-		UserOutputDTO userOutputDTO = new UserOutputDTO(elyoya.getUserId(), 
-				elyoya.getUserName(), 
-				elyoya.getEmail(),
-				elyoya.getFirstName(), 
-				elyoya.getLastName(), 
-				elyoya.getDateOfBirth(), 
-				elyoya.getPhoneNumber());
+		UserOutputDTO userOutputDTO = new UserOutputDTO(elyoya.getUserId(), elyoya.getUserName(), elyoya.getEmail(),
+				elyoya.getFirstName(), elyoya.getLastName(), elyoya.getDateOfBirth(), elyoya.getPhoneNumber());
 
 		when(userOutputDTOMapper.apply(elyoya)).thenReturn(userOutputDTO);
 
