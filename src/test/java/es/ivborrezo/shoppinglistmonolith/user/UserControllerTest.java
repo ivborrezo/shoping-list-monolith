@@ -26,8 +26,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,9 +34,6 @@ public class UserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@MockBean
 	private UserOutputDTOMapper userOutputDTOMapper;
