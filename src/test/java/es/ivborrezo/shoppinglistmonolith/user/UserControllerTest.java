@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +38,12 @@ public class UserControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@MockBean
+	private UserInputDTOMapper userInputDTOMapper;
+	
 	@MockBean
 	private UserOutputDTOMapper userOutputDTOMapper;
 
@@ -133,6 +142,49 @@ public class UserControllerTest {
 		// Assert
 		response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
+	}
+
+	@Test
+	void UserController_AddUser_ReturnResponseEntity201WithUser() throws Exception {
+		// Arrange
+		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
+		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name("Elyoya").email("elyoya@gmail.com").password("asd").firstName("El").lastName("Yoya")
+				.password("asd").dateOfBirth(dateEloya).phoneNumber("928374650").build();
+		
+		when(userService.addUser(ArgumentMatchers.any())).thenReturn(elyoya);
+
+		UserOutputDTO userOutputDTO = new UserOutputDTO(elyoya.getUserId(), elyoya.getUserName(), elyoya.getEmail(),
+				elyoya.getFirstName(), elyoya.getLastName(), elyoya.getDateOfBirth(), elyoya.getPhoneNumber());
+
+		when(userOutputDTOMapper.apply(elyoya)).thenReturn(userOutputDTO);
+		
+		// Act
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(elyoyaInputDTO)));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Elyoya"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("elyoya@gmail.com"));
+	}
+	
+	@Test
+	void UserController_AddUser_WhenNullValue_ThenReturns400() throws Exception {
+		//Arrange
+		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
+		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name("").email("elyoya@gmail.com").password("asd").firstName("El").lastName("Yoya")
+				.password("asd").dateOfBirth(dateEloya).phoneNumber("928374650").build();
+		
+		//Act
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(elyoyaInputDTO)));
+		
+		//Assert
+		response.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+
+		Mockito.verify(userService, Mockito.never()).addUser(Mockito.any());
+		
 	}
 
 	@Test

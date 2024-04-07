@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
+import es.ivborrezo.shoppinglistmonolith.exception.UnprocessableEntityException;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -55,35 +57,36 @@ public class UserServiceTest {
 	void UserService_GetUsersBySpecification_ReturnUsers() {
 		// Arrange
 		Page<User> pageUsers = new PageImpl<User>(Arrays.asList(elyoya, myrwn));
-		
+
 		Pageable pageable = PageRequest.of(0, 10);
-		when(userRepository.findAll(org.mockito.ArgumentMatchers.<Specification<User>>any(), org.mockito.ArgumentMatchers.eq(pageable)))
-				.thenReturn(pageUsers);
+		when(userRepository.findAll(org.mockito.ArgumentMatchers.<Specification<User>>any(),
+				org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(pageUsers);
 		// Act
 
-		Page<User> pageUser = userService.getUsersBySpecification("y", "@gmail", null, null, LocalDate.of(1993, 3, 18), LocalDate.of(2003, 3, 18), null, 0, 10);
+		Page<User> pageUser = userService.getUsersBySpecification("y", "@gmail", null, null, LocalDate.of(1993, 3, 18),
+				LocalDate.of(2003, 3, 18), null, 0, 10);
 
 		// Assert
-	    
+
 		assertEquals(2, pageUser.getTotalElements());
 		assertThat(pageUser.getContent()).contains(elyoya);
 		assertThat(pageUser.getContent()).contains(myrwn);
 	}
-	
+
 	@Test
 	void UserService_GetUsersBySpecification_ReturnUserFiltrado() {
 		// Arrange
 		Page<User> pageUsers = new PageImpl<User>(Arrays.asList(elyoya));
-		
+
 		Pageable pageable = PageRequest.of(0, 10);
-		when(userRepository.findAll(org.mockito.ArgumentMatchers.<Specification<User>>any(), org.mockito.ArgumentMatchers.eq(pageable)))
-				.thenReturn(pageUsers);
+		when(userRepository.findAll(org.mockito.ArgumentMatchers.<Specification<User>>any(),
+				org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(pageUsers);
 		// Act
 
 		Page<User> pageUser = userService.getUsersBySpecification(null, null, "e", "y", null, null, "9", 0, 10);
 
 		// Assert
-	    
+
 		assertEquals(1, pageUser.getTotalElements());
 		assertThat(pageUser.getContent()).contains(elyoya);
 		assertThat(pageUser.getContent()).doesNotContain(myrwn);
@@ -113,6 +116,35 @@ public class UserServiceTest {
 		// Act and Assert
 		assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(id));
 		verify(userRepository, times(1)).findById(id);
+	}
+
+	@Test
+	void UserService_AddUser_ReturnUser() {
+		// Arrange
+		LocalDate dateAlvaro = LocalDate.of(2000, 5, 6);
+
+		User alvaro = User.builder().userName("Alvaro").email("alvaro@gmail.com").firstName("Ganchito")
+				.lastName("Dalvarito").password("asd").dateOfBirth(dateAlvaro).phoneNumber("928374651").build();
+
+		when(userRepository.save(Mockito.any(User.class))).thenReturn(alvaro);
+
+		// Act
+		User obtainedUser = userService.addUser(alvaro);
+
+		// Assert
+		verify(userRepository, times(1)).save(alvaro);
+		assertThat(obtainedUser).isEqualTo(alvaro);
+
+	}
+
+	@Test
+	void UserService_AddUser_ThrowsExceptionIfIdNotNull() {
+		// Act and Assert
+		assertThrows(UnprocessableEntityException.class, () -> userService.addUser(elyoya));
+
+		assertAll(() -> {
+			verify(userRepository, times(0)).save(elyoya);
+		});
 	}
 
 	@Test
