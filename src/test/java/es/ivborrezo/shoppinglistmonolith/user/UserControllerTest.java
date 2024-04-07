@@ -43,7 +43,7 @@ public class UserControllerTest {
 
 	@MockBean
 	private UserInputDTOMapper userInputDTOMapper;
-	
+
 	@MockBean
 	private UserOutputDTOMapper userOutputDTOMapper;
 
@@ -148,16 +148,17 @@ public class UserControllerTest {
 	void UserController_AddUser_ReturnResponseEntity201WithUser() throws Exception {
 		// Arrange
 		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
-		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name("Elyoya").email("elyoya@gmail.com").password("asd").firstName("El").lastName("Yoya")
-				.password("asd").dateOfBirth(dateEloya).phoneNumber("928374650").build();
-		
+		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name("Elyoya").email("elyoya@gmail.com").password("asd")
+				.firstName("El").lastName("Yoya").password("asd").dateOfBirth(dateEloya).phoneNumber("928374650")
+				.build();
+
 		when(userService.addUser(ArgumentMatchers.any())).thenReturn(elyoya);
 
 		UserOutputDTO userOutputDTO = new UserOutputDTO(elyoya.getUserId(), elyoya.getUserName(), elyoya.getEmail(),
 				elyoya.getFirstName(), elyoya.getLastName(), elyoya.getDateOfBirth(), elyoya.getPhoneNumber());
 
 		when(userOutputDTOMapper.apply(elyoya)).thenReturn(userOutputDTO);
-		
+
 		// Act
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
 				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(elyoyaInputDTO)));
@@ -168,23 +169,23 @@ public class UserControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("elyoya@gmail.com"));
 	}
-	
+
 	@Test
-	void UserController_AddUser_WhenNullValue_ThenReturns400() throws Exception {
-		//Arrange
+	void UserController_AddUser_WhenNullValue_ThenReturns422() throws Exception {
+		// Arrange
 		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
-		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name("").email("elyoya@gmail.com").password("asd").firstName("El").lastName("Yoya")
-				.password("asd").dateOfBirth(dateEloya).phoneNumber("928374650").build();
-		
-		//Act
+		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name("").email("elyoya@gmail.com").password("")
+				.firstName("El").lastName("Yoya").dateOfBirth(dateEloya).phoneNumber("928374650").build();
+
+		// Act
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
 				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(elyoyaInputDTO)));
-		
-		//Assert
+
+		// Assert
 		response.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
 
 		Mockito.verify(userService, Mockito.never()).addUser(Mockito.any());
-		
+
 	}
 
 	@Test

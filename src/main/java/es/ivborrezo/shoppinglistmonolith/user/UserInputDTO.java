@@ -17,7 +17,6 @@ import lombok.Setter;
 @Builder
 public class UserInputDTO {
 
-	@NotNull
 	@NotBlank(message = "name can not be empty")
 	private String name;
 	

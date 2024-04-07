@@ -1,14 +1,20 @@
 package es.ivborrezo.shoppinglistmonolith.exception;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+
+import es.ivborrezo.shoppinglistmonolith.enums.DTOMapping;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -43,16 +49,36 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorMessage> handleValidationExceptions(
+	public ResponseEntity<ValidationErrorMessage> handleValidationExceptions(
 			MethodArgumentNotValidException methodArgumentNotValidException, WebRequest webRequest) {
 
 		HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
 		String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
 
-		ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), status.value(), status.getReasonPhrase(),
-				methodArgumentNotValidException.getMessage(), path);
+		List<ValidationError> validationErrors = new ArrayList<ValidationError>();
 
-		return new ResponseEntity<>(errorMessage, status);
+		for (ObjectError objectError : methodArgumentNotValidException.getBindingResult().getAllErrors()) {
+
+			FieldError fieldError = null;
+			if (objectError instanceof FieldError) {
+				fieldError = (FieldError) objectError;
+				validationErrors.add(new ValidationError(
+						DTOMapping.getModelClassNameFromDtoName(fieldError.getObjectName()),
+						fieldError.getField(),
+						fieldError.getRejectedValue(), 
+						fieldError.getDefaultMessage()
+				));
+			} else {
+				validationErrors.add(
+						new ValidationError(objectError.getObjectName(), null, null, objectError.getDefaultMessage()));
+			}
+
+		}
+
+		ValidationErrorMessage validationErrorMessage = new ValidationErrorMessage(LocalDateTime.now(), status.value(),
+				status.getReasonPhrase(), "Validation Failed", path, validationErrors);
+
+		return new ResponseEntity<>(validationErrorMessage, status);
 	}
 
 	// Handle global exceptions
