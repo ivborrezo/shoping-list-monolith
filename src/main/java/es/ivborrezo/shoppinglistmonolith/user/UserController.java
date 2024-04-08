@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
 import jakarta.validation.Valid;
 
 @RestController

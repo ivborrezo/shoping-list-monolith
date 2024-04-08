@@ -1,4 +1,4 @@
-package es.ivborrezo.shoppinglistmonolith.user;
+package es.ivborrezo.shoppinglistmonolith.user.dto;
 
 import java.time.LocalDate;
 

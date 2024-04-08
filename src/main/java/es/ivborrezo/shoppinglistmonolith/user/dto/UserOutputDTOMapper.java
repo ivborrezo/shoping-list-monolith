@@ -1,8 +1,10 @@
-package es.ivborrezo.shoppinglistmonolith.user;
+package es.ivborrezo.shoppinglistmonolith.user.dto;
 
 import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
+
+import es.ivborrezo.shoppinglistmonolith.user.User;
 
 @Service
 public class UserOutputDTOMapper implements Function<User, UserOutputDTO> {

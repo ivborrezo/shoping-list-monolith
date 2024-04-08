@@ -30,6 +30,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = UserController.class)
