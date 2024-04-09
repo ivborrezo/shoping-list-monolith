@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,8 @@ import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
-import jakarta.validation.Valid;
+import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
+import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -75,7 +77,7 @@ public class UserController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "")
-	public ResponseEntity<UserOutputDTO> addUser(@Valid @RequestBody UserInputDTO userInputDTO) {
+	public ResponseEntity<UserOutputDTO> addUser(@Validated(BasicValidation.class) @RequestBody UserInputDTO userInputDTO) {
 
 		User user = userInputDTOMapper.apply(userInputDTO);
 
