@@ -175,14 +175,66 @@ public class UserControllerTest {
 	}
 
 	@Test
-	void UserController_AddUser_WhenNullValue_ThenReturns422() throws Exception {
+	void UserController_AddUser_WhenValidationFails_ThenReturns422() throws Exception {
 		// Arrange
 		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
-		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name("").email("elyoya@gmail.com").password("")
+		String badName = "";
+		String badEmail = "Godyoyagmail.com";
+		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name(badName).email(badEmail).password("")
 				.firstName("El").lastName("Yoya").dateOfBirth(dateEloya).phoneNumber("928374650").build();
 
 		// Act
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(elyoyaInputDTO)));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+
+		Mockito.verify(userService, Mockito.never()).addUser(Mockito.any());
+
+	}
+
+	@Test
+	void UserController_UpdateUserPartially_ReturnResponseEntity201WithUser() throws Exception {
+		// Arrange
+		Long id = 1L;
+		String newName = "JejeGod";
+		String newEmail = "Godyoya@gmail.com";
+		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name(newName).email(newEmail).build();
+
+		User returnedElyoya = User.builder().userId(id).userName(newName).email(newEmail).password(elyoya.getPassword())
+				.firstName(elyoya.getFirstName()).lastName(elyoya.getLastName()).dateOfBirth(elyoya.getDateOfBirth())
+				.phoneNumber(elyoya.getPhoneNumber()).build();
+
+		when(userService.updateUserPartially(any(), any())).thenReturn(returnedElyoya);
+
+		UserOutputDTO userOutputDTO = new UserOutputDTO(returnedElyoya.getUserId(), returnedElyoya.getUserName(),
+				returnedElyoya.getEmail(), returnedElyoya.getFirstName(), returnedElyoya.getLastName(),
+				returnedElyoya.getDateOfBirth(), returnedElyoya.getPhoneNumber());
+
+		when(userOutputDTOMapper.apply(any())).thenReturn(userOutputDTO);
+
+		// Act
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/users/{id}", id)
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(elyoyaInputDTO)));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(newName))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.email").value(newEmail));
+	}
+
+	@Test
+	void UserController_UpdateUserPartially_WhenValidationFails_ThenReturns422() throws Exception {
+		// Arrange
+		Long id = 1L;
+		String newName = "JejeGod";
+		String newEmail = "Godyoyagmail.com";
+		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name(newName).email(newEmail).build();
+
+		// Act
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/users/{id}", id)
 				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(elyoyaInputDTO)));
 
 		// Assert

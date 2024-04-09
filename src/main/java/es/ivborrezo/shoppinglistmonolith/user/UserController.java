@@ -85,6 +85,16 @@ public class UserController {
 
 		return new ResponseEntity<>(userOutputDTO, HttpStatus.CREATED);
 	}
+	
+	@RequestMapping(method = RequestMethod.PATCH, value = "/{id}")
+	public ResponseEntity<UserOutputDTO> updateUserPartially(@PathVariable Long id, @Validated(PatchValidation.class) @RequestBody UserInputDTO userInputDTO) {
+
+		User user = userInputDTOMapper.apply(userInputDTO);
+
+		UserOutputDTO userOutputDTO = userOutputDTOMapper.apply(userService.updateUserPartially(id, user));
+
+		return new ResponseEntity<>(userOutputDTO, HttpStatus.OK);
+	}
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	public ResponseEntity<Void> deketeUserById(@PathVariable Long id) {

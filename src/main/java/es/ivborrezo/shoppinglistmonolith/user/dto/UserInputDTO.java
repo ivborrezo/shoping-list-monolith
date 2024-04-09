@@ -24,7 +24,7 @@ public class UserInputDTO {
 	private String name;
 	
 	@NotBlank(message = "email can not be empty", groups = BasicValidation.class)
-	@Email(groups = {BasicValidation.class, BasicValidation.class})
+	@Email(groups = {BasicValidation.class, PatchValidation.class})
 	private String email;
 
 	@NotBlank(message = "password can not be empty", groups = BasicValidation.class)
@@ -37,7 +37,7 @@ public class UserInputDTO {
 	private String lastName;
 	
 	@NotNull(message = "dateOfBirth can not be empty", groups = BasicValidation.class)
-	@Past(message = "dateOfBirth must be in the past", groups = {BasicValidation.class, BasicValidation.class})
+	@Past(message = "dateOfBirth must be in the past", groups = {BasicValidation.class, PatchValidation.class})
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateOfBirth;
 

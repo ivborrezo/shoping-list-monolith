@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -144,6 +145,52 @@ public class UserServiceTest {
 
 		assertAll(() -> {
 			verify(userRepository, times(0)).save(elyoya);
+		});
+	}
+
+	@Test
+	void UserService_UpdateUserPartially_ReturnUser() {
+		// Arrange
+		Long id = elyoya.getUserId();
+		String newName = "JejeGod";
+		String newEmail = "Godyoya@gmail.com";
+		User incompleteUser = User.builder().userName(newName).email(newEmail).build();
+
+		User returnedElyoya = User.builder().userId(id).userName(newName).email(newEmail).password(elyoya.getPassword())
+				.firstName(elyoya.getFirstName()).lastName(elyoya.getLastName()).dateOfBirth(elyoya.getDateOfBirth())
+				.phoneNumber(elyoya.getPhoneNumber()).build();
+
+		when(userRepository.findById(any())).thenReturn(Optional.ofNullable(elyoya));
+		when(userRepository.save(any())).thenReturn(returnedElyoya);
+
+		// Act
+		userService.updateUserPartially(id, incompleteUser);
+
+		// Assert
+		assertAll(() -> {
+			verify(userRepository, times(1)).findById(id);
+			verify(userRepository, times(1)).save(returnedElyoya);
+		});
+		assertEquals(returnedElyoya, elyoya);
+		assertThat(returnedElyoya.getUserName().equals(newName));
+		assertThat(returnedElyoya.getEmail().equals(newEmail));
+	}
+
+	@Test
+	void UserService_UpdateUserPartially_ThrowsExceptionIfNotFound() {
+		// Arrange
+		Long id = elyoya.getUserId();
+		String newName = "JejeGod";
+		User incompleteUser = User.builder().userName(newName).build();
+
+		when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+		// Act and Assert
+		assertThrows(ResourceNotFoundException.class, () -> userService.updateUserPartially(id, incompleteUser));
+
+		assertAll(() -> {
+			verify(userRepository, times(1)).findById(id);
+			verify(userRepository, times(0)).save(any());
 		});
 	}
 

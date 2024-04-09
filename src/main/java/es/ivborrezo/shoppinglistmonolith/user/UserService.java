@@ -1,5 +1,6 @@
 package es.ivborrezo.shoppinglistmonolith.user;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
@@ -68,6 +69,32 @@ public class UserService {
 					User.class.toString(), "id", user.getUserId().toString());
 
 		return userRepository.save(user);
+	}
+
+	public User updateUserPartially(Long id, User incompleteUser) {
+		User existingUser = userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id, "updateUserPartially",
+						"id", id.toString()));
+
+		Class<?> userClass = User.class;
+		Field[] userFields = userClass.getDeclaredFields();
+
+		for (Field field : userFields) {
+			field.setAccessible(true);
+			try {
+				Object value = field.get(incompleteUser);
+
+				if (value != null) {
+					field.set(existingUser, value);
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				// Log the exception
+			}
+
+			field.setAccessible(false);
+		}
+
+		return userRepository.save(existingUser);
 	}
 
 	public void deleteUserById(Long id) {
