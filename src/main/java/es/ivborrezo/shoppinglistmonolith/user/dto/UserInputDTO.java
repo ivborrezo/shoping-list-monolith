@@ -24,8 +24,7 @@ public class UserInputDTO {
 	private String name;
 	
 	@NotBlank(message = "email can not be empty", groups = BasicValidation.class)
-	@Email(groups = BasicValidation.class)
-	@Email(groups = PatchValidation.class)
+	@Email(groups = {BasicValidation.class, BasicValidation.class})
 	private String email;
 
 	@NotBlank(message = "password can not be empty", groups = BasicValidation.class)
@@ -38,13 +37,11 @@ public class UserInputDTO {
 	private String lastName;
 	
 	@NotNull(message = "dateOfBirth can not be empty", groups = BasicValidation.class)
-	@Past(message = "dateOfBirth must be in the past", groups = BasicValidation.class)
-	@Past(message = "dateOfBirth must be in the past", groups = PatchValidation.class)
+	@Past(message = "dateOfBirth must be in the past", groups = {BasicValidation.class, BasicValidation.class})
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateOfBirth;
 
-	@Pattern(regexp = "^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$", message = "Invalid mobile phone format", groups = BasicValidation.class)
-	@Pattern(regexp = "^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$", message = "Invalid mobile phone format", groups = BasicValidation.class)
+	@Pattern(regexp = "^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$", message = "Invalid mobile phone format", groups = {BasicValidation.class, BasicValidation.class})
 	private String phoneNumber;
 	
 }
