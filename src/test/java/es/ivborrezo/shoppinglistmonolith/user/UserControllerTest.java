@@ -30,6 +30,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
+import es.ivborrezo.shoppinglistmonolith.product.ProductService;
+import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
@@ -46,13 +48,19 @@ public class UserControllerTest {
 	private ObjectMapper objectMapper;
 
 	@MockBean
+	private UserService userService;
+
+	@MockBean
 	private UserInputDTOMapper userInputDTOMapper;
 
 	@MockBean
 	private UserOutputDTOMapper userOutputDTOMapper;
 
 	@MockBean
-	private UserService userService;
+	private ProductService productService;
+	
+	@MockBean
+	private ProductOutputDTOMapper productOutputDTOMapper;
 
 	private User elyoya;
 	private User myrwn;
