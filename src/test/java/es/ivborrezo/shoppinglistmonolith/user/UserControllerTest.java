@@ -158,34 +158,6 @@ public class UserControllerTest {
 	}
 
 	@Test
-	void UserController_GetProductsByUserId_ReturnResponseEntity200WithPageOfProducts() throws Exception {
-
-		// Arrange
-		Product macarrones = Product.builder().name("Macarrones").description("Macarrones ricos").price(3.45)
-				.brand("Gallo").groceryChain("Eroski").build();
-		Product tomatico = Product.builder().name("Tomatico").description("Tomatico rico rico").price(4.75)
-				.brand("Heinz").groceryChain("Eroski").build();
-
-		List<Product> productList = Arrays.asList(macarrones, tomatico);
-		// Create a PageRequest object to represent page settings (page number, page
-		// size)
-		PageRequest pageRequest = PageRequest.of(0, productList.size());
-
-		// Create a Page<Product> using PageImpl with the productList and pageRequest
-		Page<Product> productPage = new PageImpl<>(productList, pageRequest, productList.size());
-
-		when(productService.getAllProductsOfUser(any(), anyInt(), anyInt())).thenReturn(productPage);
-
-		// Act
-		ResultActions response = mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v1/users/1/products").contentType(MediaType.APPLICATION_JSON));
-
-		// Assert
-		response.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(2));
-	}
-
-	@Test
 	void UserController_AddUser_ReturnResponseEntity201WithUser() throws Exception {
 		// Arrange
 		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
@@ -308,5 +280,33 @@ public class UserControllerTest {
 		// Assert
 		response.andExpect(MockMvcResultMatchers.status().isNotFound());
 
+	}
+	
+	@Test
+	void UserController_GetProductsByUserId_ReturnResponseEntity200WithPageOfProducts() throws Exception {
+
+		// Arrange
+		Product macarrones = Product.builder().name("Macarrones").description("Macarrones ricos").price(3.45)
+				.brand("Gallo").groceryChain("Eroski").build();
+		Product tomatico = Product.builder().name("Tomatico").description("Tomatico rico rico").price(4.75)
+				.brand("Heinz").groceryChain("Eroski").build();
+
+		List<Product> productList = Arrays.asList(macarrones, tomatico);
+		// Create a PageRequest object to represent page settings (page number, page
+		// size)
+		PageRequest pageRequest = PageRequest.of(0, productList.size());
+
+		// Create a Page<Product> using PageImpl with the productList and pageRequest
+		Page<Product> productPage = new PageImpl<>(productList, pageRequest, productList.size());
+
+		when(productService.getAllProductsOfUser(any(), anyInt(), anyInt())).thenReturn(productPage);
+
+		// Act
+		ResultActions response = mockMvc.perform(
+				MockMvcRequestBuilders.get("/api/v1/users/1/products").contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(2));
 	}
 }

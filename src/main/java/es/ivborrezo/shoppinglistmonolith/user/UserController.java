@@ -82,16 +82,6 @@ public class UserController {
 		return new ResponseEntity<>(userDTO, HttpStatus.OK);
 	}
 
-	@RequestMapping("/{id}/products")
-	public ResponseEntity<Page<ProductOutputDTO>> getProductsByUserId(@PathVariable Long id,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-
-		Page<ProductOutputDTO> pageProductDTO = productService.getAllProductsOfUser(id, page, size)
-				.map(productOutputDTOMapper);
-
-		return new ResponseEntity<>(pageProductDTO, HttpStatus.OK);
-	}
-
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	public ResponseEntity<UserOutputDTO> addUser(
 			@Validated(BasicValidation.class) @RequestBody UserInputDTO userInputDTO) {
@@ -120,5 +110,15 @@ public class UserController {
 		userService.deleteUserById(id);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+	
+	@RequestMapping("/{id}/products")
+	public ResponseEntity<Page<ProductOutputDTO>> getProductsByUserId(@PathVariable Long id,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+
+		Page<ProductOutputDTO> pageProductDTO = productService.getAllProductsOfUser(id, page, size)
+				.map(productOutputDTOMapper);
+
+		return new ResponseEntity<>(pageProductDTO, HttpStatus.OK);
 	}
 }
