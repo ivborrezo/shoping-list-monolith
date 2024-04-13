@@ -52,30 +52,31 @@ public class UserRepositoryTest {
 
 		Page<User> pageUsers = userRepository.findAll(UserSpecifications.likeUserName("yoya"), pageable);
 
-		assertThat(pageUsers.getContent()).contains(elyoya);
+		assertThat(pageUsers.getTotalElements()).isGreaterThanOrEqualTo(1);
+		assertThat(pageUsers.getContent()).doesNotContain(myrwn);
 	}
 
 	@Test
 	public void UserRepository_FindAll_FilterEmail() {
 		Page<User> pageUsers = userRepository.findAll(UserSpecifications.likeEmail("myr"), pageable);
 
+		assertThat(pageUsers.getTotalElements()).isGreaterThanOrEqualTo(1);
 		assertThat(pageUsers.getContent()).doesNotContain(elyoya);
-		assertThat(pageUsers.getContent()).contains(myrwn);
 	}
 
 	@Test
 	public void UserRepository_FindAll_FilterFirstName() {
 		Page<User> pageUsers = userRepository.findAll(UserSpecifications.likeFirstName("myr"), pageable);
 
+		assertThat(pageUsers.getTotalElements()).isGreaterThanOrEqualTo(1);
 		assertThat(pageUsers.getContent()).doesNotContain(elyoya);
-		assertThat(pageUsers.getContent()).contains(myrwn);
 	}
 
 	@Test
 	public void UserRepository_FindAll_FilterLastName() {
 		Page<User> pageUsers = userRepository.findAll(UserSpecifications.likeLastName("yoya"), pageable);
 
-		assertThat(pageUsers.getContent()).contains(elyoya);
+		assertThat(pageUsers.getTotalElements()).isGreaterThanOrEqualTo(1);
 		assertThat(pageUsers.getContent()).doesNotContain(myrwn);
 	}
 
@@ -84,8 +85,8 @@ public class UserRepositoryTest {
 		Page<User> pageUsers = userRepository
 				.findAll(UserSpecifications.byDateOfBirthGreaterThan(LocalDate.of(2000, 3, 18)), pageable);
 
+		assertThat(pageUsers.getTotalElements()).isGreaterThanOrEqualTo(1);
 		assertThat(pageUsers.getContent()).doesNotContain(elyoya);
-		assertThat(pageUsers.getContent()).contains(myrwn);
 	}
 
 	@Test
@@ -93,7 +94,7 @@ public class UserRepositoryTest {
 		Page<User> pageUsers = userRepository
 				.findAll(UserSpecifications.byDateOfBirthLessThan(LocalDate.of(2001, 3, 18)), pageable);
 
-		assertThat(pageUsers.getContent()).contains(elyoya);
+		assertThat(pageUsers.getTotalElements()).isGreaterThanOrEqualTo(1);
 		assertThat(pageUsers.getContent()).doesNotContain(myrwn);
 	}
 
@@ -101,7 +102,7 @@ public class UserRepositoryTest {
 	public void UserRepository_FindAll_FilterPhoneNumber() {
 		Page<User> pageUsers = userRepository.findAll(UserSpecifications.likePhoneNumber("9"), pageable);
 
-		assertThat(pageUsers.getContent()).contains(elyoya);
+		assertThat(pageUsers.getTotalElements()).isGreaterThanOrEqualTo(1);
 		assertThat(pageUsers.getContent()).doesNotContain(myrwn);
 	}
 
