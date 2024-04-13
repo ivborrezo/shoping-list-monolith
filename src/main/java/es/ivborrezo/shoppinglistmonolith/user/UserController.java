@@ -13,12 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.ivborrezo.shoppinglistmonolith.product.Product;
-import es.ivborrezo.shoppinglistmonolith.product.ProductService;
-import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTO;
-import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTOMapper;
-import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTO;
-import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
@@ -27,7 +21,7 @@ import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/")
 public class UserController {
 
 	private UserService userService;
@@ -36,24 +30,14 @@ public class UserController {
 
 	private UserOutputDTOMapper userOutputDTOMapper;
 
-	private ProductService productService;
-
-	private ProductInputDTOMapper productInputDTOMapper;
-
-	private ProductOutputDTOMapper productOutputDTOMapper;
-
 	public UserController(UserService userService, UserInputDTOMapper userInputDTOMapper,
-			UserOutputDTOMapper userOutputDTOMapper, ProductService productService,
-			ProductInputDTOMapper productInputDTOMapper, ProductOutputDTOMapper productOutputDTOMapper) {
+			UserOutputDTOMapper userOutputDTOMapper) {
 		this.userService = userService;
 		this.userInputDTOMapper = userInputDTOMapper;
 		this.userOutputDTOMapper = userOutputDTOMapper;
-		this.productService = productService;
-		this.productInputDTOMapper = productInputDTOMapper;
-		this.productOutputDTOMapper = productOutputDTOMapper;
 	}
 
-	@RequestMapping("/all")
+	@RequestMapping("users/all")
 	public ResponseEntity<Page<UserOutputDTO>> getAllUsers(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "3") int size) {
 
@@ -62,7 +46,7 @@ public class UserController {
 		return new ResponseEntity<>(PageUserDTO, HttpStatus.OK);
 	}
 
-	@RequestMapping("")
+	@RequestMapping("users")
 	public ResponseEntity<Page<UserOutputDTO>> getUsersBySpecification(
 			@RequestParam(defaultValue = "") String userFilter, @RequestParam(defaultValue = "") String emailFilter,
 			@RequestParam(defaultValue = "") String firstNameFilter,
@@ -80,7 +64,7 @@ public class UserController {
 		return new ResponseEntity<>(pageUserDTO, HttpStatus.OK);
 	}
 
-	@RequestMapping("/{id}")
+	@RequestMapping("users/{id}")
 	public ResponseEntity<UserOutputDTO> getUserById(@PathVariable Long id) {
 
 		UserOutputDTO userDTO = userOutputDTOMapper.apply(userService.getUserById(id));
@@ -88,7 +72,7 @@ public class UserController {
 		return new ResponseEntity<>(userDTO, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "")
+	@RequestMapping(method = RequestMethod.POST, value = "users")
 	public ResponseEntity<UserOutputDTO> addUser(
 			@Validated(BasicValidation.class) @RequestBody UserInputDTO userInputDTO) {
 
@@ -99,7 +83,7 @@ public class UserController {
 		return new ResponseEntity<>(userOutputDTO, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(method = RequestMethod.PATCH, value = "/{id}")
+	@RequestMapping(method = RequestMethod.PATCH, value = "users/{id}")
 	public ResponseEntity<UserOutputDTO> updateUserPartially(@PathVariable Long id,
 			@Validated(PatchValidation.class) @RequestBody UserInputDTO userInputDTO) {
 
@@ -110,33 +94,11 @@ public class UserController {
 		return new ResponseEntity<>(userOutputDTO, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+	@RequestMapping(method = RequestMethod.DELETE, value = "users/{id}")
 	public ResponseEntity<Void> deketeUserById(@PathVariable Long id) {
 
 		userService.deleteUserById(id);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
-	
-	@RequestMapping("/{id}/products")
-	public ResponseEntity<Page<ProductOutputDTO>> getProductsByUserId(@PathVariable Long id,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-
-		Page<ProductOutputDTO> pageProductDTO = productService.getAllProductsOfUser(id, page, size)
-				.map(productOutputDTOMapper);
-
-		return new ResponseEntity<>(pageProductDTO, HttpStatus.OK);
-	}
-
-	@RequestMapping(method = RequestMethod.POST, value = "/{userId}/products")
-	public ResponseEntity<ProductOutputDTO> addProductByUserId(@PathVariable Long userId,
-			@Validated(BasicValidation.class) @RequestBody ProductInputDTO productInputDTO) {
-
-		Product product = productInputDTOMapper.apply(productInputDTO);
-
-		ProductOutputDTO productOutputDTO = productOutputDTOMapper
-				.apply(productService.addProductByUserId(userId, product));
-
-		return new ResponseEntity<>(productOutputDTO, HttpStatus.CREATED);
 	}
 }
