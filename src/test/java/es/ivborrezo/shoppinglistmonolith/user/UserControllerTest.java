@@ -2,6 +2,7 @@ package es.ivborrezo.shoppinglistmonolith.user;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +33,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 import es.ivborrezo.shoppinglistmonolith.product.Product;
 import es.ivborrezo.shoppinglistmonolith.product.ProductService;
+import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTO;
+import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTOMapper;
+import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTO;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
@@ -59,6 +63,9 @@ public class UserControllerTest {
 
 	@MockBean
 	private ProductService productService;
+
+	@MockBean
+	private ProductInputDTOMapper productInputDTOMapper;
 
 	@MockBean
 	private ProductOutputDTOMapper productOutputDTOMapper;
@@ -308,5 +315,57 @@ public class UserControllerTest {
 		// Assert
 		response.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(2));
+	}
+
+	@Test
+	void UserController_AddProductByUserId_ReturnResponseEntity201WithProduct() throws Exception {
+		// Arrange
+		Long id = 1L;
+		ProductInputDTO macarronesInputDTO = ProductInputDTO.builder().name("Macarrones")
+				.description("Macarrones ricos").price(3.45).brand("Gallo").groceryChain("Eroski").build();
+
+		Product macarrones = Product.builder().name("Macarrones").description("Macarrones ricos").price(3.45)
+				.brand("Gallo").groceryChain("Eroski").build();
+
+		when(productService.addProductByUserId(anyLong(), any())).thenReturn(macarrones);
+
+		ProductOutputDTO macarronesOutputDTO = new ProductOutputDTO(macarrones.getProductId(), macarrones.getName(),
+				macarrones.getDescription(), macarrones.getPrice(), macarrones.getBrand(),
+				macarrones.getGroceryChain());
+
+		when(productOutputDTOMapper.apply(macarrones)).thenReturn(macarronesOutputDTO);
+
+		// Act
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/{id}/products", id)
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(macarronesInputDTO)));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(macarronesInputDTO.getName()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(macarronesInputDTO.getDescription()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(macarronesInputDTO.getPrice()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.brand").value(macarronesInputDTO.getBrand()));
+
+	}
+
+	@Test
+	void UserController_AddProductByUserId_WhenValidationFails_ThenReturns422() throws Exception {
+		// Arrange
+
+		Long id = 1L;
+		String badName = "";
+		double badPrice = -1;
+		ProductInputDTO macarronesInputDTO = ProductInputDTO.builder().name(badName).description("Macarrones ricos")
+				.price(badPrice).brand("Gallo").groceryChain("Eroski").build();
+
+		// Act
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/{id}/products", id)
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(macarronesInputDTO)));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+
+		Mockito.verify(userService, Mockito.never()).addUser(Mockito.any());
+
 	}
 }

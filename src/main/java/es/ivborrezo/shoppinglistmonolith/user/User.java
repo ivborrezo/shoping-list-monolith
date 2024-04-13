@@ -1,6 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.user;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -65,11 +66,13 @@ public class User {
 	@Pattern(regexp = "^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$", message = "Invalid mobile phone format")
 	private String phoneNumber;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Product> productList;
+	private List<Product> productList = new ArrayList<Product>();
 
+	@Builder.Default
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ShoppingList> shoppingLists;
+	private List<ShoppingList> shoppingLists = new ArrayList<ShoppingList>();
 
 	@ManyToMany(cascade =
         {
@@ -81,4 +84,14 @@ public class User {
         targetEntity = ShoppingList.class)
 	@JoinTable(name = "user_shopping_list_subscription", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "shopping_list_id"))
 	private List<ShoppingList> subscribedShoppingLists;
+	
+	public void addProduct(Product product) {
+		product.setUser(this);
+		productList.add(product);
+	}
+	
+	public void addOwnedShoppingList (ShoppingList shoppingList) {
+		shoppingList.setOwner(this);
+		shoppingLists.add(shoppingList);
+	}
 }

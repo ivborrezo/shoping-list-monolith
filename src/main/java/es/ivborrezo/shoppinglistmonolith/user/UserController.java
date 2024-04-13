@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.ivborrezo.shoppinglistmonolith.product.Product;
 import es.ivborrezo.shoppinglistmonolith.product.ProductService;
+import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTO;
+import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTO;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
@@ -27,23 +30,26 @@ import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-	UserService userService;
+	private UserService userService;
 
-	UserInputDTOMapper userInputDTOMapper;
+	private UserInputDTOMapper userInputDTOMapper;
 
-	UserOutputDTOMapper userOutputDTOMapper;
+	private UserOutputDTOMapper userOutputDTOMapper;
 
-	ProductService productService;
+	private ProductService productService;
 
-	ProductOutputDTOMapper productOutputDTOMapper;
+	private ProductInputDTOMapper productInputDTOMapper;
+
+	private ProductOutputDTOMapper productOutputDTOMapper;
 
 	public UserController(UserService userService, UserInputDTOMapper userInputDTOMapper,
 			UserOutputDTOMapper userOutputDTOMapper, ProductService productService,
-			ProductOutputDTOMapper productOutputDTOMapper) {
+			ProductInputDTOMapper productInputDTOMapper, ProductOutputDTOMapper productOutputDTOMapper) {
 		this.userService = userService;
 		this.userInputDTOMapper = userInputDTOMapper;
 		this.userOutputDTOMapper = userOutputDTOMapper;
 		this.productService = productService;
+		this.productInputDTOMapper = productInputDTOMapper;
 		this.productOutputDTOMapper = productOutputDTOMapper;
 	}
 
@@ -120,5 +126,17 @@ public class UserController {
 				.map(productOutputDTOMapper);
 
 		return new ResponseEntity<>(pageProductDTO, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/{userId}/products")
+	public ResponseEntity<ProductOutputDTO> addProductByUserId(@PathVariable Long userId,
+			@Validated(BasicValidation.class) @RequestBody ProductInputDTO productInputDTO) {
+
+		Product product = productInputDTOMapper.apply(productInputDTO);
+
+		ProductOutputDTO productOutputDTO = productOutputDTOMapper
+				.apply(productService.addProductByUserId(userId, product));
+
+		return new ResponseEntity<>(productOutputDTO, HttpStatus.CREATED);
 	}
 }

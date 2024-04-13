@@ -2,11 +2,16 @@ package es.ivborrezo.shoppinglistmonolith.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +23,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
+import es.ivborrezo.shoppinglistmonolith.user.User;
+import es.ivborrezo.shoppinglistmonolith.user.UserRepository;
+
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
 
 	@Mock
 	private ProductRepository productRepository;
+
+	@Mock
+	private UserRepository userRepository;
 
 	@InjectMocks
 	private ProductService productService;
@@ -57,5 +69,43 @@ public class ProductServiceTest {
 		assertThat(pageReturnedProducts.getContent()).contains(macarrones);
 		assertThat(pageReturnedProducts.getContent()).contains(tomatico);
 		assertThat(pageReturnedProducts.getContent()).doesNotContain(alcachofas);
+	}
+
+	@Test
+	void ProductService_AddProductByUserId_ReturnProduct() {
+		// Arrange
+		User elyoya = User.builder().userId(1L).userName("Elyoya").email("elyoya@gmail.com").firstName("El")
+				.lastName("Yoya").password("asd").dateOfBirth(LocalDate.of(2000, 3, 18)).phoneNumber("928374650")
+				.build();
+
+		Long idUser = elyoya.getUserId();
+
+		when(userRepository.findById(idUser)).thenReturn(Optional.ofNullable(elyoya));
+		when(productRepository.save(any())).thenReturn(macarrones);
+
+		// Act
+		Product obtainedProduct = productService.addProductByUserId(idUser, macarrones);
+
+		// Assert
+		verify(userRepository, times(1)).findById(any());
+		verify(productRepository, times(1)).save(any());
+		assertThat(obtainedProduct).isEqualTo(macarrones);
+		assertThat(macarrones.getUser().getUserId()).isEqualTo(idUser);
+
+	}
+
+	@Test
+	void ProductService_AddProductByUserId_ThrowsExceptionIfNotFound() {
+		// Arrange
+		Long idUser = 1L;
+
+		when(userRepository.findById(idUser)).thenReturn(Optional.empty());
+
+		// Act and Assert
+		assertThrows(ResourceNotFoundException.class, () -> productService.addProductByUserId(idUser, macarrones));
+
+		verify(userRepository, times(1)).findById(any());
+		verify(productRepository, times(0)).save(any());
+
 	}
 }
