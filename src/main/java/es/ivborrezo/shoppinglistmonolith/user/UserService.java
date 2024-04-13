@@ -15,7 +15,7 @@ import es.ivborrezo.shoppinglistmonolith.exception.UnprocessableEntityException;
 @Service
 public class UserService {
 
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
