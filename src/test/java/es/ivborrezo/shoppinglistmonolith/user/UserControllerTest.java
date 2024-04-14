@@ -34,6 +34,7 @@ import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
+import es.ivborrezo.shoppinglistmonolith.utils.Constants;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = UserController.class)
@@ -178,9 +179,9 @@ public class UserControllerTest {
 	void UserController_AddUser_WhenValidationFails_ThenReturns422() throws Exception {
 		// Arrange
 		LocalDate dateEloya = LocalDate.of(2000, 3, 18);
-		String badName = "";
+		String badName = Constants.EMPTY;
 		String badEmail = "Godyoyagmail.com";
-		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name(badName).email(badEmail).password("").firstName("El")
+		UserInputDTO elyoyaInputDTO = UserInputDTO.builder().name(badName).email(badEmail).password(Constants.EMPTY).firstName("El")
 				.lastName("Yoya").dateOfBirth(dateEloya).phoneNumber("928374650").build();
 
 		// Act

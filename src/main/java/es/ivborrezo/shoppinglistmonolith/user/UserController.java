@@ -17,6 +17,7 @@ import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
+import es.ivborrezo.shoppinglistmonolith.utils.Constants;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
 
@@ -48,13 +49,14 @@ public class UserController {
 
 	@RequestMapping("users")
 	public ResponseEntity<Page<UserOutputDTO>> getUsersBySpecification(
-			@RequestParam(defaultValue = "") String userFilter, @RequestParam(defaultValue = "") String emailFilter,
-			@RequestParam(defaultValue = "") String firstNameFilter,
-			@RequestParam(defaultValue = "") String lastNameFilter,
+			@RequestParam(defaultValue = Constants.EMPTY) String userFilter,
+			@RequestParam(defaultValue = Constants.EMPTY) String emailFilter,
+			@RequestParam(defaultValue = Constants.EMPTY) String firstNameFilter,
+			@RequestParam(defaultValue = Constants.EMPTY) String lastNameFilter,
 			@RequestParam(required = false) LocalDate dateOfBirthGreaterFilter,
 			@RequestParam(required = false) LocalDate dateOfBirthLessFilter,
-			@RequestParam(defaultValue = "") String phoneNumberFilter, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
+			@RequestParam(defaultValue = Constants.EMPTY) String phoneNumberFilter,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
 		Page<UserOutputDTO> pageUserDTO = userService
 				.getUsersBySpecification(userFilter, emailFilter, firstNameFilter, lastNameFilter,

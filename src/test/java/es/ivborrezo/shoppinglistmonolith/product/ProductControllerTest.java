@@ -30,6 +30,7 @@ import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTO;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTO;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTOMapper;
+import es.ivborrezo.shoppinglistmonolith.utils.Constants;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = ProductController.class)
@@ -112,7 +113,7 @@ public class ProductControllerTest {
 	void UserController_AddProductByUserId_WhenValidationFails_ThenReturns422() throws Exception {
 		// Arrange
 		Long id = 1L;
-		String badName = "";
+		String badName = Constants.EMPTY;
 		double badPrice = -1;
 		ProductInputDTO macarronesInputDTO = ProductInputDTO.builder().name(badName).description("Macarrones ricos")
 				.price(badPrice).brand("Gallo").groceryChain("Eroski").build();
