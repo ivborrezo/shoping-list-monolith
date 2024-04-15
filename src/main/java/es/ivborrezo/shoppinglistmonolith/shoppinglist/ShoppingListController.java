@@ -36,7 +36,7 @@ public class ShoppingListController {
 	}
 
 	@RequestMapping("users/{id}/shopping-lists")
-	public ResponseEntity<Page<ShoppingListOutputDTO>> getProductsByUserId(@PathVariable Long id,
+	public ResponseEntity<Page<ShoppingListOutputDTO>> getShoppingListsByUserId(@PathVariable Long id,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
 		Page<ShoppingListOutputDTO> pageShoppingListDTO = shoppingListService.getAllShoppingListsOfUser(id, page, size)
