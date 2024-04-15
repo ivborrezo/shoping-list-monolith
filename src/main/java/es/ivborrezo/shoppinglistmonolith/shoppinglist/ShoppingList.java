@@ -20,10 +20,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ShoppingList {
 
 	@Id
@@ -46,14 +52,8 @@ public class ShoppingList {
 	private List<ListProduct> listProducts;
 
 //	@ManyToMany(mappedBy = "subscribedShoppingLists")
-	@ManyToMany(cascade =
-        {
-                CascadeType.DETACH,
-                CascadeType.MERGE,
-                CascadeType.REFRESH,
-                CascadeType.PERSIST
-        },
-        targetEntity = User.class)
+	@ManyToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
+			CascadeType.PERSIST }, targetEntity = User.class)
 	@JoinTable(name = "user_shopping_list_subscription", joinColumns = @JoinColumn(name = "shopping_list_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private List<User> subscribedUserList;
 }
