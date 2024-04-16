@@ -62,4 +62,24 @@ public class ProductRepositoryTest {
 		assertThat(pageProducts.getContent()).contains(tomatico);
 		assertThat(pageProducts.getContent()).doesNotContain(alcachofas);
 	}
+	
+	@Test
+	public void ProductRepository_ExistsByIdAndUserId_ReturnTrue() {
+
+		Page<Product> pageProducts = productRepository.findByUserId(1L, pageable);
+		
+		Boolean exist = productRepository.existsByProductIdAndUserId(1L, 1L);
+
+		assertThat(exist).isEqualTo(true);
+	}
+	
+	@Test
+	public void ProductRepository_ExistsByIdAndUserId_ReturnFalse() {
+
+		Page<Product> pageProducts = productRepository.findByUserId(1L, pageable);
+		
+		Boolean exist = productRepository.existsByProductIdAndUserId(100L, 1L);
+
+		assertThat(exist).isEqualTo(false);
+	}
 }

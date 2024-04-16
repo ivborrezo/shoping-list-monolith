@@ -106,6 +106,26 @@ public class ProductServiceTest {
 
 		verify(userRepository, times(1)).findById(any());
 		verify(productRepository, times(0)).save(any());
-
+	}
+	
+	@Test
+	void ProductService_DeleteProductByUserId_DeleteCalled() {
+		Long id = 1L;
+		when(productRepository.existsByProductIdAndUserId(anyLong(), anyLong())).thenReturn(true);
+		
+		assertThrows(ResourceNotFoundException.class, () -> productService.deleteByProductIdAndUserId(id, id));
+		
+		verify(productRepository, times(1)).existsByProductIdAndUserId(anyLong(), anyLong());
+		verify(productRepository, times(1)).deleteByProductIdAndUserId(anyLong(), anyLong());
+	}
+	
+	@Test
+	void ProductService_DeleteByProductIdAndUserId_ThrowsExceptionIfNotFound() {
+		Long id = 1L;
+		when(productRepository.existsByProductIdAndUserId(anyLong(), anyLong())).thenReturn(true);
+		
+		assertThrows(ResourceNotFoundException.class, () -> productService.deleteByProductIdAndUserId(id, id));
+		verify(productRepository, times(1)).existsByProductIdAndUserId(anyLong(), anyLong());
+		verify(productRepository, times(1)).deleteByProductIdAndUserId(anyLong(), anyLong());
 	}
 }
