@@ -75,11 +75,19 @@ public class ProductRepositoryTest {
 	
 	@Test
 	public void ProductRepository_ExistsByIdAndUserId_ReturnFalse() {
-
-		Page<Product> pageProducts = productRepository.findByUserId(1L, pageable);
 		
 		Boolean exist = productRepository.existsByProductIdAndUserId(100L, 1L);
 
 		assertThat(exist).isEqualTo(false);
+	}
+	
+	@Test
+	public void UserRepository_Delete_UserDeleted() {
+		// Act: Delete the product from the repository
+//		productRepository.deleteByProductIdAndUserId(macarrones.getProductId(), macarrones.getUser().getUserId());
+		productRepository.delete(macarrones);
+		
+		// Assert: Verify that the product is deleted
+		assertThat(entityManager.find(Product.class, macarrones.getProductId())).isNull();
 	}
 }

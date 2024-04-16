@@ -38,4 +38,11 @@ public class ProductService {
 
 		return productRepository.save(product);
 	}
+	
+	public void deleteByProductIdAndUserId(Long productId, Long userId) {
+		
+		productRepository.existsByProductIdAndUserId(productId, userId);
+		
+		productRepository.deleteById(productId);
+	}
 }

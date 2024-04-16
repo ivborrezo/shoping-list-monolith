@@ -113,7 +113,7 @@ public class ProductServiceTest {
 		Long id = 1L;
 		when(productRepository.existsByProductIdAndUserId(anyLong(), anyLong())).thenReturn(true);
 		
-		assertThrows(ResourceNotFoundException.class, () -> productService.deleteByProductIdAndUserId(id, id));
+		productService.deleteByProductIdAndUserId(id, id);
 		
 		verify(productRepository, times(1)).existsByProductIdAndUserId(anyLong(), anyLong());
 		verify(productRepository, times(1)).deleteByProductIdAndUserId(anyLong(), anyLong());
