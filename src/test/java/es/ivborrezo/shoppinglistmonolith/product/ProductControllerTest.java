@@ -128,4 +128,18 @@ public class ProductControllerTest {
 		Mockito.verify(productService, Mockito.never()).addProductByUserId(anyLong(), any());
 
 	}
+
+	@Test
+	void UserController_DeleteByProductIdAndUserId_WhenValidationFails_ReturnResponseEntity204Void() throws Exception {
+		// Arrange
+		Mockito.doNothing().when(productService).deleteByProductIdAndUserId(anyLong(), anyLong());
+
+		// Act
+		ResultActions response = mockMvc
+				.perform(MockMvcRequestBuilders.delete("/api/v1/users/{userId}/products/{productId}", 1L, 1L));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isNoContent());
+
+	}
 }

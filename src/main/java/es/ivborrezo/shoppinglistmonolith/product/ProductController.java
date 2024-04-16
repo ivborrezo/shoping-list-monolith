@@ -26,13 +26,14 @@ public class ProductController {
 	private ProductInputDTOMapper productInputDTOMapper;
 
 	private ProductOutputDTOMapper productOutputDTOMapper;
-	
-	public ProductController(ProductService productService, ProductInputDTOMapper productInputDTOMapper, ProductOutputDTOMapper productOutputDTOMapper) {
+
+	public ProductController(ProductService productService, ProductInputDTOMapper productInputDTOMapper,
+			ProductOutputDTOMapper productOutputDTOMapper) {
 		this.productService = productService;
 		this.productInputDTOMapper = productInputDTOMapper;
 		this.productOutputDTOMapper = productOutputDTOMapper;
 	}
-	
+
 	@RequestMapping("users/{id}/products")
 	public ResponseEntity<Page<ProductOutputDTO>> getProductsByUserId(@PathVariable Long id,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -53,5 +54,13 @@ public class ProductController {
 				.apply(productService.addProductByUserId(userId, product));
 
 		return new ResponseEntity<>(productOutputDTO, HttpStatus.CREATED);
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE, value = "users/{userId}/products/{productId}")
+	public ResponseEntity<Void> deleteByProductIdAndUserId(@PathVariable Long userId, @PathVariable Long productId) {
+
+		productService.deleteByProductIdAndUserId(productId, userId);
+
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

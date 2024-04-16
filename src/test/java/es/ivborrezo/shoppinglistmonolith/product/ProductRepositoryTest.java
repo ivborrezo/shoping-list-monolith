@@ -65,8 +65,6 @@ public class ProductRepositoryTest {
 	
 	@Test
 	public void ProductRepository_ExistsByIdAndUserId_ReturnTrue() {
-
-		Page<Product> pageProducts = productRepository.findByUserId(1L, pageable);
 		
 		Boolean exist = productRepository.existsByProductIdAndUserId(1L, 1L);
 
@@ -82,9 +80,8 @@ public class ProductRepositoryTest {
 	}
 	
 	@Test
-	public void UserRepository_Delete_UserDeleted() {
+	public void ProductRepository_Delete_ProductDeleted() {
 		// Act: Delete the product from the repository
-//		productRepository.deleteByProductIdAndUserId(macarrones.getProductId(), macarrones.getUser().getUserId());
 		productRepository.delete(macarrones);
 		
 		// Assert: Verify that the product is deleted

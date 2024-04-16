@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 import es.ivborrezo.shoppinglistmonolith.user.User;
 import es.ivborrezo.shoppinglistmonolith.user.UserRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ProductService {
@@ -38,11 +39,14 @@ public class ProductService {
 
 		return productRepository.save(product);
 	}
-	
+
+	@Transactional
 	public void deleteByProductIdAndUserId(Long productId, Long userId) {
-		
-		productRepository.existsByProductIdAndUserId(productId, userId);
-		
+
+		if (!productRepository.existsByProductIdAndUserId(productId, userId))
+			throw new ResourceNotFoundException("User not found with id: " + userId, "addProductByUserId", "userId",
+					userId.toString());
+
 		productRepository.deleteById(productId);
 	}
 }
