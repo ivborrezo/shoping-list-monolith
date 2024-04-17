@@ -1,7 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.product.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
@@ -30,6 +30,6 @@ public class ProductInputDTO {
 	private String groceryChain;
 	
 	@Builder.Default
-	private List<Long> categoryIds = new ArrayList<Long>();
+	private Set<Long> categoryIds = new HashSet<>();
 
 }
