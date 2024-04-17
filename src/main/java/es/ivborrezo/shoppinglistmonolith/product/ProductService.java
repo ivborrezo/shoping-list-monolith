@@ -52,12 +52,14 @@ public class ProductService {
 
 		// Check if each category associated with the product exists in the database or
 		// throw ResourceNotFoundException
-		product.getCategoryList().stream().forEach(category -> {
-			if (!categoryRepository.existsById(category.getCategoryId())) {
-				throw new ResourceNotFoundException("Category not found with id: " + category.getCategoryId(),
-						"addProductByUserId", "categoryId", category.getCategoryId().toString());
-			}
-		});
+		if (product.getCategoryList() != null) {
+			product.getCategoryList().stream().forEach(category -> {
+				if (!categoryRepository.existsById(category.getCategoryId())) {
+					throw new ResourceNotFoundException("Category not found with id: " + category.getCategoryId(),
+							"addProductByUserId", "categoryId", category.getCategoryId().toString());
+				}
+			});
+		}
 
 		// Add the product to the user
 		user.addProduct(product);

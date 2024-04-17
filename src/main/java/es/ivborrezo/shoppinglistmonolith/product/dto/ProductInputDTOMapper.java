@@ -1,5 +1,6 @@
 package es.ivborrezo.shoppinglistmonolith.product.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,10 +16,14 @@ public class ProductInputDTOMapper implements Function<ProductInputDTO, Product>
 	@Override
 	public Product apply(ProductInputDTO productInputDTO) {
 
-		List<Category> categoryList = productInputDTO.getCategoryIds().stream()
-				.map(categoryId -> 
-					Category.builder().categoryId(categoryId).build()
-				).collect(Collectors.toList());
+		List<Category> categoryList = new ArrayList<>();
+
+		if (productInputDTO.getCategoryIds() != null) {
+			categoryList = productInputDTO.getCategoryIds().stream()
+					.map(categoryId -> 
+						Category.builder().categoryId(categoryId).build()
+					).collect(Collectors.toList());
+		}
 
 		return Product.builder().productId(null).name(productInputDTO.getName())
 				.description(productInputDTO.getDescription()).price(productInputDTO.getPrice())
