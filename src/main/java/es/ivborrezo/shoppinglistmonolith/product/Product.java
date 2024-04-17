@@ -53,7 +53,7 @@ public class Product {
 	private User user;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ListProduct> ListProducts;
+	private List<ListProduct> listProducts;
 
 	@ManyToMany
 	@JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))

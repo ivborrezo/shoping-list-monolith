@@ -44,15 +44,28 @@ public class ProductController {
 		return new ResponseEntity<>(pageProductDTO, HttpStatus.OK);
 	}
 
+	/**
+	 * Endpoint for adding a product for a user specified by their user ID.
+	 *
+	 * @param userId          The unique identifier of the user to whom the product
+	 *                        will be added.
+	 * @param productInputDTO The DTO (Data Transfer Object) containing information
+	 *                        about the product to be added.
+	 * @return A ResponseEntity containing the DTO representation of the added
+	 *         product with HTTP status CREATED (201).
+	 */
 	@RequestMapping(method = RequestMethod.POST, value = "users/{userId}/products")
 	public ResponseEntity<ProductOutputDTO> addProductByUserId(@PathVariable Long userId,
 			@Validated(BasicValidation.class) @RequestBody ProductInputDTO productInputDTO) {
 
+		// Map the input DTO to a Product entity
 		Product product = productInputDTOMapper.apply(productInputDTO);
 
+		// Add the product for the specified user and map it to an output DTO
 		ProductOutputDTO productOutputDTO = productOutputDTOMapper
 				.apply(productService.addProductByUserId(userId, product));
 
+		// Return a ResponseEntity containing the output DTO with HTTP CREATED (201)
 		return new ResponseEntity<>(productOutputDTO, HttpStatus.CREATED);
 	}
 

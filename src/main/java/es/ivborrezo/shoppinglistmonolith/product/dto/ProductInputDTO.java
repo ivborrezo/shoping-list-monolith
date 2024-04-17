@@ -1,5 +1,8 @@
 package es.ivborrezo.shoppinglistmonolith.product.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
 import jakarta.validation.constraints.NotBlank;
@@ -25,5 +28,8 @@ public class ProductInputDTO {
 	private String brand;
 
 	private String groceryChain;
+	
+	@Builder.Default
+	private List<Long> categoryIds = new ArrayList<Long>();
 
 }
