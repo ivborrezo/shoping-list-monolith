@@ -23,9 +23,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import es.ivborrezo.shoppinglistmonolith.category.Category;
+import es.ivborrezo.shoppinglistmonolith.category.CategoryRepository;
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 import es.ivborrezo.shoppinglistmonolith.user.User;
 import es.ivborrezo.shoppinglistmonolith.user.UserRepository;
+import es.ivborrezo.shoppinglistmonolith.utils.Constants;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
@@ -35,6 +38,9 @@ public class ProductServiceTest {
 
 	@Mock
 	private UserRepository userRepository;
+
+	@Mock
+	private CategoryRepository categoryRepository;
 
 	@InjectMocks
 	private ProductService productService;
@@ -74,6 +80,36 @@ public class ProductServiceTest {
 	@Test
 	void ProductService_AddProductByUserId_ReturnProduct() {
 		// Arrange
+		User elyoya = User.builder().userId(Constants.LONG_ONE).userName("Elyoya").email("elyoya@gmail.com")
+				.firstName("El").lastName("Yoya").password("asd").dateOfBirth(LocalDate.of(2000, 3, 18))
+				.phoneNumber("928374650").build();
+
+		Long idUser = elyoya.getUserId();
+
+		Category category1 = Category.builder().categoryId(Constants.LONG_ONE).build();
+		Category category2 = Category.builder().categoryId(Constants.LONG_TWO).build();
+
+		macarrones.setCategoryList(Arrays.asList(category1, category2));
+
+		when(userRepository.findById(idUser)).thenReturn(Optional.ofNullable(elyoya));
+		when(categoryRepository.existsById(any())).thenReturn(true);
+		when(productRepository.save(any())).thenReturn(macarrones);
+
+		// Act
+		Product obtainedProduct = productService.addProductByUserId(idUser, macarrones);
+
+		// Assert
+		verify(userRepository, times(1)).findById(any());
+		verify(categoryRepository, times(2)).existsById(any());
+		verify(productRepository, times(1)).save(any());
+		assertThat(obtainedProduct).isEqualTo(macarrones);
+		assertThat(macarrones.getUser().getUserId()).isEqualTo(idUser);
+
+	}
+
+	@Test
+	void ProductService_AddProductByUserIdWithoutCategory_ReturnProduct() {
+		// Arrange
 		User elyoya = User.builder().userId(1L).userName("Elyoya").email("elyoya@gmail.com").firstName("El")
 				.lastName("Yoya").password("asd").dateOfBirth(LocalDate.of(2000, 3, 18)).phoneNumber("928374650")
 				.build();
@@ -88,6 +124,7 @@ public class ProductServiceTest {
 
 		// Assert
 		verify(userRepository, times(1)).findById(any());
+		verify(categoryRepository, times(0)).existsById(any());
 		verify(productRepository, times(1)).save(any());
 		assertThat(obtainedProduct).isEqualTo(macarrones);
 		assertThat(macarrones.getUser().getUserId()).isEqualTo(idUser);
@@ -95,7 +132,7 @@ public class ProductServiceTest {
 	}
 
 	@Test
-	void ProductService_AddProductByUserId_ThrowsExceptionIfNotFound() {
+	void ProductService_AddProductByUserId_ThrowsExceptionIfUserNotFound() {
 		// Arrange
 		Long idUser = 1L;
 
@@ -107,23 +144,47 @@ public class ProductServiceTest {
 		verify(userRepository, times(1)).findById(any());
 		verify(productRepository, times(0)).save(any());
 	}
-	
+
+	@Test
+	void ProductService_AddProductByUserId_ThrowsExceptionIfCategoryNotFound() {
+		// Arrange
+		User elyoya = User.builder().userId(Constants.LONG_ONE).userName("Elyoya").email("elyoya@gmail.com")
+				.firstName("El").lastName("Yoya").password("asd").dateOfBirth(LocalDate.of(2000, 3, 18))
+				.phoneNumber("928374650").build();
+
+		Long idUser = elyoya.getUserId();
+
+		Category category1 = Category.builder().categoryId(Constants.LONG_ONE).build();
+		Category category2 = Category.builder().categoryId(Constants.LONG_TWO).build();
+
+		macarrones.setCategoryList(Arrays.asList(category1, category2));
+
+		when(userRepository.findById(idUser)).thenReturn(Optional.ofNullable(elyoya));
+		when(categoryRepository.existsById(any())).thenReturn(false);
+
+		// Act and Assert
+		assertThrows(ResourceNotFoundException.class, () -> productService.addProductByUserId(idUser, macarrones));
+		
+		verify(categoryRepository, times(1)).existsById(any());
+		verify(productRepository, times(0)).save(any());
+	}
+
 	@Test
 	void ProductService_DeleteProductByUserId_DeleteCalled() {
 		Long id = 1L;
 		when(productRepository.existsByProductIdAndUserId(anyLong(), anyLong())).thenReturn(true);
-		
+
 		productService.deleteByProductIdAndUserId(id, id);
-		
+
 		verify(productRepository, times(1)).existsByProductIdAndUserId(anyLong(), anyLong());
 		verify(productRepository, times(1)).deleteById(anyLong());
 	}
-	
+
 	@Test
 	void ProductService_DeleteByProductIdAndUserId_ThrowsExceptionIfNotFound() {
 		Long id = 1L;
 		when(productRepository.existsByProductIdAndUserId(anyLong(), anyLong())).thenReturn(false);
-		
+
 		assertThrows(ResourceNotFoundException.class, () -> productService.deleteByProductIdAndUserId(id, id));
 		verify(productRepository, times(1)).existsByProductIdAndUserId(anyLong(), anyLong());
 		verify(productRepository, times(0)).deleteById(anyLong());
