@@ -1,5 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.product;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,8 @@ import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
 @RequestMapping("/api/v1/")
 public class ProductController {
 
+	private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+	
 	private ProductService productService;
 
 	private ProductInputDTOMapper productInputDTOMapper;
@@ -58,13 +62,19 @@ public class ProductController {
 	public ResponseEntity<ProductOutputDTO> addProductByUserId(@PathVariable Long userId,
 			@Validated(BasicValidation.class) @RequestBody ProductInputDTO productInputDTO) {
 
-		// Map the input DTO to a Product entity
+		logger.info("Received request to add product for user with ID: {}", userId);
+	    logger.debug("ProductInputDTO received: {}", productInputDTO);
+		
+	    // Map the input DTO to a Product entity
 		Product product = productInputDTOMapper.apply(productInputDTO);
 
 		// Add the product for the specified user and map it to an output DTO
 		ProductOutputDTO productOutputDTO = productOutputDTOMapper
 				.apply(productService.addProductByUserId(userId, product));
 
+		logger.info("Product added successfully for user with ID: {}", userId);
+	    logger.debug("ProductOutputDTO returned: {}", productOutputDTO);
+		
 		// Return a ResponseEntity containing the output DTO with HTTP CREATED (201)
 		return new ResponseEntity<>(productOutputDTO, HttpStatus.CREATED);
 	}
