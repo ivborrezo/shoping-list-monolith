@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+	<!-- use Spring default values -->
+	<include
+		resource="org/springframework/boot/logging/logback/defaults.xml" />
+
 	<property name="LOG_PATH" value="./logs" />
 
 	<appender name="STDOUT"
 		class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} -
-				%msg%n
-			</Pattern>
+			<!-- <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} 
+				- %msg%n</pattern> -->
+			<Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
 		</layout>
 	</appender>
 
@@ -19,7 +22,7 @@
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} -
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} -
 				%msg%n
 			</Pattern>
 		</encoder>
@@ -43,8 +46,8 @@
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} -
-				%msg%n
+				%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}
+				- %msg%n
 			</Pattern>
 		</encoder>
 
@@ -61,11 +64,8 @@
 
 	</appender>
 
-	<!-- <logger name="org.springframework.web" level="debug">
-		<appender-ref ref="FILE-AUDIT" />
-		<appender-ref ref="STDOUT" />
-	</logger>
- -->
+	<!-- <logger name="org.springframework.web" level="debug"> <appender-ref 
+		ref="FILE-AUDIT" /> <appender-ref ref="STDOUT" /> </logger> -->
 	<logger name="es.ivborrezo.shoppinglistmonolith" level="debug"
 		additivity="false">
 		<appender-ref ref="FILE-AUDIT" />
