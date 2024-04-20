@@ -82,7 +82,7 @@ public class UserControllerTest {
 		// Create a Page<User> using PageImpl with the userList and pageRequest
 		Page<User> userPage = new PageImpl<>(userList, pageRequest, userList.size());
 
-		when(userService.getUsersBySpecification(any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
+		when(userService.getUsersBySpecification(any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any()))
 				.thenReturn(userPage);
 
 		// Act

@@ -65,7 +65,7 @@ public class UserServiceTest {
 		// Act
 
 		Page<User> pageUser = userService.getUsersBySpecification("y", "@gmail", null, null, LocalDate.of(1993, 3, 18),
-				LocalDate.of(2003, 3, 18), null, 0, 10);
+				LocalDate.of(2003, 3, 18), null, 0, 10, any());
 
 		// Assert
 
@@ -84,7 +84,7 @@ public class UserServiceTest {
 				org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(pageUsers);
 		// Act
 
-		Page<User> pageUser = userService.getUsersBySpecification(null, null, "e", "y", null, null, "9", 0, 10);
+		Page<User> pageUser = userService.getUsersBySpecification(null, null, "e", "y", null, null, "9", 0, 10, any());
 
 		// Assert
 

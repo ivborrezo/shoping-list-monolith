@@ -2,15 +2,19 @@ package es.ivborrezo.shoppinglistmonolith.user;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 import es.ivborrezo.shoppinglistmonolith.exception.UnprocessableEntityException;
+import es.ivborrezo.shoppinglistmonolith.utils.CriteriaOrderConverter;
+import jakarta.persistence.criteria.Order;
 
 @Service
 public class UserService {
@@ -27,9 +31,11 @@ public class UserService {
 	}
 
 	public Page<User> getUsersBySpecification(String userName, String email, String firstName, String lastName,
-			LocalDate dateOfBirthGreater, LocalDate dateOfBirthLess, String phoneNumber, int pageNumber, int pageSize) {
+			LocalDate dateOfBirthGreater, LocalDate dateOfBirthLess, String phoneNumber, int pageNumber, int pageSize, List<String> sortList) {
 
-		Pageable pageable = PageRequest.of(pageNumber, pageSize);
+		
+		List<Sort.Order> orderList = CriteriaOrderConverter.createSortOrder(sortList);
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderList));
 
 		Specification<User> spec = Specification.where(null);
 

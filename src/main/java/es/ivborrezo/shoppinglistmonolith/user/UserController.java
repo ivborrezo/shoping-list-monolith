@@ -1,6 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.user;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -56,11 +57,12 @@ public class UserController {
 			@RequestParam(required = false) LocalDate dateOfBirthGreaterFilter,
 			@RequestParam(required = false) LocalDate dateOfBirthLessFilter,
 			@RequestParam(defaultValue = Constants.EMPTY) String phoneNumberFilter,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "") List<String> sort) {
 
 		Page<UserOutputDTO> pageUserDTO = userService
 				.getUsersBySpecification(userFilter, emailFilter, firstNameFilter, lastNameFilter,
-						dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size)
+						dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, sort)
 				.map(this.userOutputDTOMapper);
 
 		return new ResponseEntity<>(pageUserDTO, HttpStatus.OK);
