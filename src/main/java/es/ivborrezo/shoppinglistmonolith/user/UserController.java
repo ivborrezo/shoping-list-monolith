@@ -59,7 +59,7 @@ public class UserController {
 			@RequestParam(defaultValue = Constants.EMPTY) String phoneNumberFilter,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "") List<String> sort) {
-
+		
 		Page<UserOutputDTO> pageUserDTO = userService
 				.getUsersBySpecification(userFilter, emailFilter, firstNameFilter, lastNameFilter,
 						dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, sort)
