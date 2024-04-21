@@ -32,8 +32,8 @@ public class UserOutputDTOMapper implements Function<User, UserOutputDTO> {
 	private static final Map<String, String> fieldMappings = new HashMap<>();
 
 	static {
-		fieldMappings.put("userId", "id");
-		fieldMappings.put("userName", "name");
+		fieldMappings.put("id", "userId");
+		fieldMappings.put("name", "userName");
 	}
 
 }

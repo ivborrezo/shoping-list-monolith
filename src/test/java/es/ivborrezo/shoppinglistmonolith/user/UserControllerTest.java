@@ -94,6 +94,21 @@ public class UserControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(2));
 
 	}
+	
+	@Test
+	void UserController_GetUsersBySpecification_ReturnResponseEntity500WhenSortValueEmpty() throws Exception {
+		// Arrange
+		String sortField1 = Constants.EMPTY;
+		String sortField2 = "-email";
+
+		// Act
+		ResultActions response = mockMvc
+				.perform(MockMvcRequestBuilders.get("/api/v1/users?{sortField1},{sortField2}", sortField1, sortField2).contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+	}
 
 	@Test
 	void UserController_GetUserById_ReturnResponseEntity200WithUser() throws Exception {

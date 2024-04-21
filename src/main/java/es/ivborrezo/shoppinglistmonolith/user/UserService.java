@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,12 +15,12 @@ import org.springframework.stereotype.Service;
 
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 import es.ivborrezo.shoppinglistmonolith.exception.UnprocessableEntityException;
-import es.ivborrezo.shoppinglistmonolith.utils.CriteriaOrderConverter;
-import jakarta.persistence.criteria.Order;
 
 @Service
 public class UserService {
 
+	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+	
 	private UserRepository userRepository;
 
 	public UserService(UserRepository userRepository) {
@@ -30,15 +32,33 @@ public class UserService {
 		return userRepository.findAll(pageable);
 	}
 
+	/**
+	 * Retrieves a paginated list of users based on specified filters and sorting
+	 * criteria.
+	 *
+	 * @param userName           Filter string for user name.
+	 * @param email              Filter string for email.
+	 * @param firstName          Filter string for first name.
+	 * @param lastName           Filter string for last name.
+	 * @param dateOfBirthGreater Filter for users born on or after a specified date.
+	 * @param dateOfBirthLess    Filter for users born before a specified date.
+	 * @param phoneNumber        Filter string for phone number.
+	 * @param pageNumber         Page number for pagination.
+	 * @param pageSize           Number of items per page.
+	 * @param orderList          List of Sort.Order objects representing sorting
+	 *                           criteria.
+	 * @return Page object containing the users matching the specified criteria.
+	 */
 	public Page<User> getUsersBySpecification(String userName, String email, String firstName, String lastName,
-			LocalDate dateOfBirthGreater, LocalDate dateOfBirthLess, String phoneNumber, int pageNumber, int pageSize, List<String> sortList) {
+			LocalDate dateOfBirthGreater, LocalDate dateOfBirthLess, String phoneNumber, int pageNumber, int pageSize, List<Sort.Order> orderList) {
 
-		
-		List<Sort.Order> orderList = CriteriaOrderConverter.createSortOrder(sortList);
+		// Create pageable object for pagination and sorting
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderList));
 
+		// Initialize the specification with a null condition
 		Specification<User> spec = Specification.where(null);
 
+		// Add filters to the specification if the filter strings are not null or empty
 		if (userName != null && !userName.isEmpty())
 			spec = spec.and(UserSpecifications.likeUserName(userName));
 
@@ -60,7 +80,14 @@ public class UserService {
 		if (phoneNumber != null && !phoneNumber.isEmpty())
 			spec = spec.and(UserSpecifications.likePhoneNumber(phoneNumber));
 
-		return userRepository.findAll(spec, pageable);
+		// Retrieve users from the repository based on the specification and pageable
+		Page<User> pageUsers = userRepository.findAll(spec, pageable);
+		
+		logger.trace("Retrieved {} users with filters: userName={}, email={}, firstName={}, lastName={}, dateOfBirthGreater={}, dateOfBirthLess={}, phoneNumber={}, pageNumber={}, pageSize={}, orderBy={}",
+				pageUsers.getNumberOfElements(), userName, email, firstName, lastName,
+	            dateOfBirthGreater, dateOfBirthLess, phoneNumber, pageNumber, pageSize, orderList);
+		
+		return pageUsers;
 	}
 
 	public User getUserById(Long id) {

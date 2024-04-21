@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +25,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 import es.ivborrezo.shoppinglistmonolith.exception.UnprocessableEntityException;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
+import es.ivborrezo.shoppinglistmonolith.utils.CriteriaOrderConverter;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -59,13 +63,17 @@ public class UserServiceTest {
 		// Arrange
 		Page<User> pageUsers = new PageImpl<User>(Arrays.asList(elyoya, myrwn));
 
-		Pageable pageable = PageRequest.of(0, 10);
+		List<Sort.Order> orderList = CriteriaOrderConverter.createAndMapSortOrder(Arrays.asList("name"),
+				UserOutputDTOMapper.getFieldMappings());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(orderList));
+
 		when(userRepository.findAll(org.mockito.ArgumentMatchers.<Specification<User>>any(),
 				org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(pageUsers);
+
 		// Act
 
 		Page<User> pageUser = userService.getUsersBySpecification("y", "@gmail", null, null, LocalDate.of(1993, 3, 18),
-				LocalDate.of(2003, 3, 18), null, 0, 10, any());
+				LocalDate.of(2003, 3, 18), null, 0, 10, orderList);
 
 		// Assert
 
@@ -79,15 +87,17 @@ public class UserServiceTest {
 		// Arrange
 		Page<User> pageUsers = new PageImpl<User>(Arrays.asList(elyoya));
 
-		Pageable pageable = PageRequest.of(0, 10);
+		List<Sort.Order> orderList = CriteriaOrderConverter.createAndMapSortOrder(Arrays.asList("name"),
+				UserOutputDTOMapper.getFieldMappings());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(orderList));
+
 		when(userRepository.findAll(org.mockito.ArgumentMatchers.<Specification<User>>any(),
 				org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(pageUsers);
 		// Act
 
-		Page<User> pageUser = userService.getUsersBySpecification(null, null, "e", "y", null, null, "9", 0, 10, any());
+		Page<User> pageUser = userService.getUsersBySpecification(null, null, "e", "y", null, null, "9", 0, 10, orderList);
 
 		// Assert
-
 		assertEquals(1, pageUser.getTotalElements());
 		assertThat(pageUser.getContent()).contains(elyoya);
 		assertThat(pageUser.getContent()).doesNotContain(myrwn);

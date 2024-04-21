@@ -3,7 +3,10 @@ package es.ivborrezo.shoppinglistmonolith.user;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +22,7 @@ import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.utils.Constants;
+import es.ivborrezo.shoppinglistmonolith.utils.CriteriaOrderConverter;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
 
@@ -26,6 +30,8 @@ import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
 @RequestMapping("/api/v1/")
 public class UserController {
 
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+	
 	private UserService userService;
 
 	private UserInputDTOMapper userInputDTOMapper;
@@ -48,6 +54,24 @@ public class UserController {
 		return new ResponseEntity<>(PageUserDTO, HttpStatus.OK);
 	}
 
+	/**
+	 * Retrieves a paginated list of users based on specified filters and sorting
+	 * criteria.
+	 *
+	 * @param userFilter               Filter string for username.
+	 * @param emailFilter              Filter string for email.
+	 * @param firstNameFilter          Filter string for first name.
+	 * @param lastNameFilter           Filter string for last name.
+	 * @param dateOfBirthGreaterFilter Filter for users born on or after a specified
+	 *                                 date.
+	 * @param dateOfBirthLessFilter    Filter for users born before a specified
+	 *                                 date.
+	 * @param phoneNumberFilter        Filter string for phone number.
+	 * @param page                     Page number for pagination (default is 0).
+	 * @param size                     Number of items per page (default is 10).
+	 * @param sort                     List of fields to sort by (default is empty).
+	 * @return ResponseEntity containing a page of UserOutputDTO objects.
+	 */
 	@RequestMapping("users")
 	public ResponseEntity<Page<UserOutputDTO>> getUsersBySpecification(
 			@RequestParam(defaultValue = Constants.EMPTY) String userFilter,
@@ -60,11 +84,20 @@ public class UserController {
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "") List<String> sort) {
 		
+		// Convert sorting criteria to Spring Data JPA's Sort.Order objects
+		List<Sort.Order> orderList = CriteriaOrderConverter.createAndMapSortOrder(sort, UserOutputDTOMapper.getFieldMappings());
+		
+		// Retrieve a page of UserOutputDTO objects based on specified filters and sorting criteria
 		Page<UserOutputDTO> pageUserDTO = userService
 				.getUsersBySpecification(userFilter, emailFilter, firstNameFilter, lastNameFilter,
-						dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, sort)
+						dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, orderList)
 				.map(this.userOutputDTOMapper);
 
+		logger.info(
+				"Retrieved {} users with filters: userFilter={}, emailFilter={}, firstNameFilter={}, lastNameFilter={}, dateOfBirthGreaterFilter={}, dateOfBirthLessFilter={}, phoneNumberFilter={}, page={}, size={}, sort={}",
+				pageUserDTO.getNumberOfElements(), userFilter, emailFilter, firstNameFilter, lastNameFilter,
+				dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, sort);
+		
 		return new ResponseEntity<>(pageUserDTO, HttpStatus.OK);
 	}
 
