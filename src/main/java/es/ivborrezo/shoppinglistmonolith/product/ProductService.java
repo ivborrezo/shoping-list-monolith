@@ -1,8 +1,15 @@
 package es.ivborrezo.shoppinglistmonolith.product;
 
+import java.util.List;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import es.ivborrezo.shoppinglistmonolith.category.CategoryRepository;
@@ -13,6 +20,8 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ProductService {
+
+	private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
 	private ProductRepository productRepository;
 
@@ -27,11 +36,92 @@ public class ProductService {
 		this.categoryRepository = categoryRepository;
 	}
 
+	/**
+	 * Retrieves a page of products based on the provided criteria.
+	 *
+	 * @param productName  The name of the product to filter by. Can be null or
+	 *                     empty.
+	 * @param description  The description of the product to filter by. Can be null
+	 *                     or empty.
+	 * @param priceGreater The minimum price of the product to filter by. Can be
+	 *                     null.
+	 * @param priceLess    The maximum price of the product to filter by. Can be
+	 *                     null.
+	 * @param brand        The brand of the product to filter by. Can be null or
+	 *                     empty.
+	 * @param groceryChain The grocery chain of the product to filter by. Can be
+	 *                     null or empty.
+	 * @param categoryIds  The set of category IDs to filter by. Can be null or
+	 *                     empty.
+	 * @param pageNumber   The page number of the result set to retrieve.
+	 * @param pageSize     The size of each page in the result set.
+	 * @param orderList    The list of sorting orders for the result set.
+	 * @return A page of products based on the specified criteria.
+	 */
+	public Page<Product> getProductsBySpecification(String productName, String description, Double priceGreater,
+			Double priceLess, String brand, String groceryChain, Set<Long> categoryIds, int pageNumber, int pageSize,
+			List<Sort.Order> orderList) {
+
+		// Create pageable object for pagination and sorting
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderList));
+
+		// Initialize the specification with a null condition
+		Specification<Product> spec = Specification.where(null);
+
+		// Add filters to the specification if the filter strings are not null or empty
+		if (productName != null && !productName.isEmpty())
+			spec = spec.and(ProductSpecifications.likeProductName(productName));
+
+		if (description != null && !description.isEmpty())
+			spec = spec.and(ProductSpecifications.likeDescription(description));
+
+		if (priceGreater != null)
+			spec = spec.and(ProductSpecifications.byPriceGreaterThan(priceGreater));
+
+		if (priceLess != null)
+			spec = spec.and(ProductSpecifications.byPriceLessThan(priceLess));
+
+		if (brand != null && !brand.isEmpty())
+			spec = spec.and(ProductSpecifications.likeBrand(brand));
+
+		if (groceryChain != null && !groceryChain.isEmpty())
+			spec = spec.and(ProductSpecifications.likeGroceryChain(groceryChain));
+
+//		if (categoryIds != null && categoryIds.size() > 0)
+//			spec = spec.and(ProductSpecifications.likeCategory(categoryIds));
+
+		// Retrieve products from the repository based on the specification and pageable
+		Page<Product> pageProducts = productRepository.findAll(spec, pageable);
+
+		logger.trace(
+				"Retrieved {} products with filters: productName={}, description={}, priceGreater={}, priceLess={}, brand={}, groceryChain={}, categoryIds={}, pageNumber={}, pageSize={}, orderBy={}",
+				pageProducts.getNumberOfElements(), productName, description, priceGreater, priceLess, brand,
+				groceryChain, categoryIds, pageNumber, pageSize, orderList);
+
+		return pageProducts;
+	}
+
+	/**
+	 * Retrieves a page of products belonging to a specific user.
+	 *
+	 * @param id         The ID of the user whose products are to be retrieved.
+	 * @param pageNumber The page number of the result set to retrieve.
+	 * @param pageSize   The size of each page in the result set.
+	 * @return A page of products belonging to the specified user.
+	 */
 	public Page<Product> getAllProductsOfUser(Long id, int pageNumber, int pageSize) {
 
+		// Create pageable object for pagination
 		Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-		return productRepository.findByUserId(id, pageable);
+		// Retrieve products from the repository based on user ID and pageable
+		Page<Product> pageProducts = productRepository.findByUserId(id, pageable);
+
+		// Log the retrieval of products
+		logger.trace("Retrieved {} products for user with ID {} (Page Number: {}, Page Size: {})",
+				pageProducts.getNumberOfElements(), id, pageNumber, pageSize);
+
+		return pageProducts;
 	}
 
 	/**

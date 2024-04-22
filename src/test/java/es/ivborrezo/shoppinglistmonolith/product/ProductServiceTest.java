@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,14 +22,19 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import es.ivborrezo.shoppinglistmonolith.category.Category;
 import es.ivborrezo.shoppinglistmonolith.category.CategoryRepository;
 import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 import es.ivborrezo.shoppinglistmonolith.user.User;
 import es.ivborrezo.shoppinglistmonolith.user.UserRepository;
+import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.utils.Constants;
+import es.ivborrezo.shoppinglistmonolith.utils.CriteriaOrderConverter;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
@@ -53,12 +59,60 @@ public class ProductServiceTest {
 	public void setupTestData() {
 		// Arrange
 
-		macarrones = Product.builder().name("Macarrones").description("Macarrones ricos").price(3.45).brand("Gallo")
-				.groceryChain("Eroski").build();
-		tomatico = Product.builder().name("Tomatico").description("Tomatico rico rico").price(4.75).brand("Heinz")
-				.groceryChain("Eroski").build();
-		alcachofas = Product.builder().name("Alcachofas").description("Mehhh").price(5.00).brand("Marca blanca")
+		macarrones = Product.builder().productName("Macarrones").description("Macarrones ricos").price(3.45)
+				.brand("Gallo").groceryChain("Eroski").build();
+		tomatico = Product.builder().productName("Tomatico").description("Tomatico rico rico").price(4.75)
+				.brand("Heinz").groceryChain("Eroski").build();
+		alcachofas = Product.builder().productName("Alcachofas").description("Mehhh").price(5.00).brand("Marca blanca")
 				.groceryChain("TodoTodo").build();
+	}
+
+	@Test
+	void ProductService_GetProductsBySpecification_ReturnProducts() {
+		// Arrange
+		Page<Product> pageProducts = new PageImpl<Product>(Arrays.asList(macarrones, tomatico, alcachofas));
+
+		List<Sort.Order> orderList = CriteriaOrderConverter.createAndMapSortOrder(Arrays.asList("name"),
+				UserOutputDTOMapper.getFieldMappings());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(orderList));
+
+		when(productRepository.findAll(org.mockito.ArgumentMatchers.<Specification<Product>>any(),
+				org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(pageProducts);
+
+		// Act
+
+		Page<Product> returnedPageProduct = productService.getProductsBySpecification("a", "a", null, null, "a", "a", null,
+				0, 10, orderList);
+
+		// Assert
+
+		assertEquals(3, returnedPageProduct.getTotalElements());
+		assertThat(returnedPageProduct.getContent()).contains(macarrones);
+		assertThat(returnedPageProduct.getContent()).contains(tomatico);
+		assertThat(returnedPageProduct.getContent()).contains(alcachofas);
+	}
+
+	@Test
+	void ProductService_GetProductsBySpecificationn_ReturnProductsFiltrados() {
+		// Arrange
+		Page<Product> pageProducts = new PageImpl<Product>(Arrays.asList(macarrones));
+
+		List<Sort.Order> orderList = CriteriaOrderConverter.createAndMapSortOrder(Arrays.asList("name"),
+				UserOutputDTOMapper.getFieldMappings());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(orderList));
+
+		when(productRepository.findAll(org.mockito.ArgumentMatchers.<Specification<Product>>any(),
+				org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(pageProducts);
+		// Act
+
+		Page<Product> returnedPageProduct = productService.getProductsBySpecification(null, null, 100.0, 100.0, null,
+				null, null, 0, 10, orderList);
+
+		// Assert
+		assertEquals(1, returnedPageProduct.getTotalElements());
+		assertThat(returnedPageProduct.getContent()).contains(macarrones);
+		assertThat(returnedPageProduct.getContent()).doesNotContain(tomatico);
+		assertThat(returnedPageProduct.getContent()).doesNotContain(alcachofas);
 	}
 
 	@Test
@@ -164,7 +218,7 @@ public class ProductServiceTest {
 
 		// Act and Assert
 		assertThrows(ResourceNotFoundException.class, () -> productService.addProductByUserId(idUser, macarrones));
-		
+
 		verify(categoryRepository, times(1)).existsById(any());
 		verify(productRepository, times(0)).save(any());
 	}

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -50,13 +51,62 @@ public class ProductControllerTest {
 	@MockBean
 	private ProductOutputDTOMapper productOutputDTOMapper;
 
+	private Product macarrones;
+	private Product tomatico;
+	private Product alcachofas;
+
+	@BeforeEach
+	public void setupTestData() {
+		macarrones = Product.builder().productName("Macarrones").description("Macarrones ricos").price(3.45)
+				.brand("Gallo").groceryChain("Eroski").build();
+		tomatico = Product.builder().productName("Tomatico").description("Tomatico rico rico").price(4.75)
+				.brand("Heinz").groceryChain("Eroski").build();
+		alcachofas = Product.builder().productName("Alcachofas").description("Mehhh").price(5.00).brand("Marca blanca")
+				.groceryChain("TodoTodo").build();
+	}
+
 	@Test
-	void UserController_GetProductsByUserId_ReturnResponseEntity200WithPageOfProducts() throws Exception {
+	void ProductController_GetProductsBySpecification_ReturnResponseEntity200WithPageOfProducts() throws Exception {
+		// Arrange
+		List<Product> productList = Arrays.asList(macarrones, tomatico, alcachofas);
+
+		PageRequest pageRequest = PageRequest.of(0, productList.size());
+		Page<Product> productPage = new PageImpl<Product>(productList, pageRequest, productList.size());
+
+		when(productService.getProductsBySpecification(any(), any(), any(), any(), any(), any(), any(), anyInt(),
+				anyInt(), any())).thenReturn(productPage);
+
+		// Act
+		ResultActions response = mockMvc
+				.perform(MockMvcRequestBuilders.get("/api/v1/products").contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(3));
+	}
+	
+	@Test
+	void ProductController_GetProductsBySpecification__ReturnResponseEntity500WhenSortValueEmpty() throws Exception {
+		// Arrange
+		String sortField1 = Constants.EMPTY;
+		String sortField2 = "-description";
+
+		// Act
+		ResultActions response = mockMvc
+				.perform(MockMvcRequestBuilders.get("/api/v1/products?{sortField1},{sortField2}", sortField1, sortField2).contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+	}
+
+	@Test
+	void ProductController_GetProductsByUserId_ReturnResponseEntity200WithPageOfProducts() throws Exception {
 
 		// Arrange
-		Product macarrones = Product.builder().name("Macarrones").description("Macarrones ricos").price(3.45)
+		Product macarrones = Product.builder().productName("Macarrones").description("Macarrones ricos").price(3.45)
 				.brand("Gallo").groceryChain("Eroski").build();
-		Product tomatico = Product.builder().name("Tomatico").description("Tomatico rico rico").price(4.75)
+		Product tomatico = Product.builder().productName("Tomatico").description("Tomatico rico rico").price(4.75)
 				.brand("Heinz").groceryChain("Eroski").build();
 
 		List<Product> productList = Arrays.asList(macarrones, tomatico);
@@ -79,19 +129,19 @@ public class ProductControllerTest {
 	}
 
 	@Test
-	void UserController_AddProductByUserId_ReturnResponseEntity201WithProduct() throws Exception {
+	void ProductController_AddProductByUserId_ReturnResponseEntity201WithProduct() throws Exception {
 		// Arrange
 		Long id = 1L;
 		ProductInputDTO macarronesInputDTO = ProductInputDTO.builder().name("Macarrones")
 				.description("Macarrones ricos").price(3.45).brand("Gallo").groceryChain("Eroski").build();
 
-		Product macarrones = Product.builder().name("Macarrones").description("Macarrones ricos").price(3.45)
+		Product macarrones = Product.builder().productName("Macarrones").description("Macarrones ricos").price(3.45)
 				.brand("Gallo").groceryChain("Eroski").build();
 
 		when(productService.addProductByUserId(anyLong(), any())).thenReturn(macarrones);
 
-		ProductOutputDTO macarronesOutputDTO = new ProductOutputDTO(macarrones.getProductId(), macarrones.getName(),
-				macarrones.getDescription(), macarrones.getPrice(), macarrones.getBrand(),
+		ProductOutputDTO macarronesOutputDTO = new ProductOutputDTO(macarrones.getProductId(),
+				macarrones.getProductName(), macarrones.getDescription(), macarrones.getPrice(), macarrones.getBrand(),
 				macarrones.getGroceryChain());
 
 		when(productOutputDTOMapper.apply(macarrones)).thenReturn(macarronesOutputDTO);
@@ -110,7 +160,7 @@ public class ProductControllerTest {
 	}
 
 	@Test
-	void UserController_AddProductByUserId_WhenValidationFails_ThenReturns422() throws Exception {
+	void ProductController_AddProductByUserId_WhenValidationFails_ThenReturns422() throws Exception {
 		// Arrange
 		Long id = 1L;
 		String badName = Constants.EMPTY;
@@ -130,7 +180,8 @@ public class ProductControllerTest {
 	}
 
 	@Test
-	void UserController_DeleteByProductIdAndUserId_WhenValidationFails_ReturnResponseEntity204Void() throws Exception {
+	void ProductController_DeleteByProductIdAndUserId_WhenValidationFails_ReturnResponseEntity204Void()
+			throws Exception {
 		// Arrange
 		Mockito.doNothing().when(productService).deleteByProductIdAndUserId(anyLong(), anyLong());
 
