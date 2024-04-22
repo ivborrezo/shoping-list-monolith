@@ -46,7 +46,7 @@ VALUES
     ('kelly_jenkins', 'kelly@example.com', 'password321', 'Kelly', 'Jenkins', '1991-06-11', '963852741');
 
 -- Insert examples into the product table
-INSERT INTO product (name, description, price, brand, grocery_chain, user_id)
+INSERT INTO product (product_name, description, price, brand, grocery_chain, user_id)
 VALUES 
     ('Apples', 'Fresh apples', 2.99, 'Green Garden', 'Carrefour', 1),
     ('Bananas', 'Ripe bananas', 1.99, 'Golden Harvest', 'Carrefour', 2),

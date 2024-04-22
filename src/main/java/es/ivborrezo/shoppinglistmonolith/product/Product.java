@@ -35,8 +35,8 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "product_product_id_seq")
 	private Long productId;
 
-	@NotBlank(message = "Name can not be null")
-	private String name;
+	@NotBlank(message = "ProductName can not be null")
+	private String productName;
 
 	private String description;
 

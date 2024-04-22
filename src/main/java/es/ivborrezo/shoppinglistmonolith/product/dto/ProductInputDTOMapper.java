@@ -25,7 +25,7 @@ public class ProductInputDTOMapper implements Function<ProductInputDTO, Product>
 					).collect(Collectors.toList());
 		}
 
-		return Product.builder().productId(null).name(productInputDTO.getName())
+		return Product.builder().productId(null).productName(productInputDTO.getName())
 				.description(productInputDTO.getDescription()).price(productInputDTO.getPrice())
 				.brand(productInputDTO.getBrand()).groceryChain(productInputDTO.getGroceryChain())
 				.categoryList(categoryList).build();

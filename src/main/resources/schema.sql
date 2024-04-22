@@ -24,7 +24,7 @@ CREATE SEQUENCE product_product_id_seq
 
 CREATE TABLE product (
     product_id BIGINT default NEXTVAL('product_product_id_seq') PRIMARY KEY,
-    name VARCHAR NOT NULL,
+    product_name VARCHAR NOT NULL,
     description TEXT,
     price DOUBLE PRECISION NOT NULL CHECK (price > 0),
     brand VARCHAR NOT NULL,

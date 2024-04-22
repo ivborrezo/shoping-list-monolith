@@ -39,11 +39,11 @@ public class ProductRepositoryTest {
 		myrwn = User.builder().userId(2L).userName("Myrwn").email("myrwn@gmail.com").firstName("Myr").lastName("Wn")
 				.password("asd").dateOfBirth(null).build();
 
-		macarrones = Product.builder().name("Macarrones").description("Macarrones ricos").price(3.45).brand("Gallo")
+		macarrones = Product.builder().productName("Macarrones").description("Macarrones ricos").price(3.45).brand("Gallo")
 				.groceryChain("Eroski").user(elyoya).build();
-		tomatico = Product.builder().name("Tomatico").description("Tomatico rico rico").price(4.75).brand("Heinz")
+		tomatico = Product.builder().productName("Tomatico").description("Tomatico rico rico").price(4.75).brand("Heinz")
 				.groceryChain("Eroski").user(elyoya).build();
-		alcachofas = Product.builder().name("Alcachofas").description("Mehhh").price(5.00).brand("Marca blanca")
+		alcachofas = Product.builder().productName("Alcachofas").description("Mehhh").price(5.00).brand("Marca blanca")
 				.groceryChain("TodoTodo").user(myrwn).build();
 
 		pageable = PageRequest.of(0, 10);
