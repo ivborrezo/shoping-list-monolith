@@ -3,6 +3,7 @@ package es.ivborrezo.shoppinglistmonolith.user;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import es.ivborrezo.shoppinglistmonolith.exception.UnprocessableEntityException;
 public class UserService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-	
+
 	private UserRepository userRepository;
 
 	public UserService(UserRepository userRepository) {
@@ -50,7 +51,8 @@ public class UserService {
 	 * @return Page object containing the users matching the specified criteria.
 	 */
 	public Page<User> getUsersBySpecification(String userName, String email, String firstName, String lastName,
-			LocalDate dateOfBirthGreater, LocalDate dateOfBirthLess, String phoneNumber, int pageNumber, int pageSize, List<Sort.Order> orderList) {
+			LocalDate dateOfBirthGreater, LocalDate dateOfBirthLess, String phoneNumber, int pageNumber, int pageSize,
+			List<Sort.Order> orderList) {
 
 		// Create pageable object for pagination and sorting
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderList));
@@ -82,18 +84,35 @@ public class UserService {
 
 		// Retrieve users from the repository based on the specification and pageable
 		Page<User> pageUsers = userRepository.findAll(spec, pageable);
-		
-		logger.trace("Retrieved {} users with filters: userName={}, email={}, firstName={}, lastName={}, dateOfBirthGreater={}, dateOfBirthLess={}, phoneNumber={}, pageNumber={}, pageSize={}, orderBy={}",
-				pageUsers.getNumberOfElements(), userName, email, firstName, lastName,
-	            dateOfBirthGreater, dateOfBirthLess, phoneNumber, pageNumber, pageSize, orderList);
-		
+
+		logger.trace(
+				"Retrieved {} users with filters: userName={}, email={}, firstName={}, lastName={}, dateOfBirthGreater={}, dateOfBirthLess={}, phoneNumber={}, pageNumber={}, pageSize={}, orderBy={}",
+				pageUsers.getNumberOfElements(), userName, email, firstName, lastName, dateOfBirthGreater,
+				dateOfBirthLess, phoneNumber, pageNumber, pageSize, orderList);
+
 		return pageUsers;
 	}
 
+	/**
+	 * Retrieves a user by their ID.
+	 *
+	 * @param id The ID of the user to retrieve.
+	 * @return The user with the specified ID.
+	 * @throws ResourceNotFoundException if no user is found with the given ID.
+	 */
 	public User getUserById(Long id) {
-		return userRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id, "getUserById", "id",
-						id.toString()));
+		logger.info("Attempting to retrieve user with ID: {}", id);
+
+		Optional<User> optionalUser = userRepository.findById(id);
+		if (optionalUser.isPresent()) {
+			User user = optionalUser.get();
+			logger.trace("User found with ID {}: {}", id, user);
+			return user;
+		} else {
+			String errorMessage = String.format("User not found with ID: %d", id);
+			logger.error(errorMessage);
+			throw new ResourceNotFoundException(errorMessage, "getUserById", "id", id.toString());
+		}
 	}
 
 	public User addUser(User user) {
