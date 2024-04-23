@@ -100,12 +100,41 @@ public class ProductController {
 		return new ResponseEntity<>(pageProductDTO, HttpStatus.OK);
 	}
 
+	
+	/**
+     * Retrieves a product by its ID.
+     *
+     * @param id The ID of the product to retrieve.
+     * @return ResponseEntity containing the ProductOutputDTO.
+     */
+	@RequestMapping("products/{id}")
+	public ResponseEntity<ProductOutputDTO> getProductById(@PathVariable long id) {
+
+		logger.info("Retrieving product with ID: {}", id);
+		
+		ProductOutputDTO productOutputDTO = productOutputDTOMapper.apply(productService.getProductById(id));
+		logger.info("Retrieved product with ID: {}", id);
+		
+		return new ResponseEntity<>(productOutputDTO, HttpStatus.OK);
+	}
+
+	/**
+	 * Retrieves products associated with a user by user ID.
+	 *
+	 * @param id   The ID of the user.
+	 * @param page The page number (default is 0).
+	 * @param size The size of each page (default is 10).
+	 * @return ResponseEntity containing a page of ProductOutputDTO objects.
+	 */
 	@RequestMapping("users/{id}/products")
 	public ResponseEntity<Page<ProductOutputDTO>> getProductsByUserId(@PathVariable Long id,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
+		logger.info("Retrieving products for user with ID: {}, page: {}, size: {}", id, page, size);
 		Page<ProductOutputDTO> pageProductDTO = productService.getAllProductsOfUser(id, page, size)
 				.map(productOutputDTOMapper);
+
+		logger.info("Retrieved {} products for user with ID: {}", pageProductDTO.getNumberOfElements(), id);
 
 		return new ResponseEntity<>(pageProductDTO, HttpStatus.OK);
 	}

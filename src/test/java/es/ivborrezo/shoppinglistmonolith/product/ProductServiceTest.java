@@ -59,12 +59,12 @@ public class ProductServiceTest {
 	public void setupTestData() {
 		// Arrange
 
-		macarrones = Product.builder().productName("Macarrones").description("Macarrones ricos").price(3.45)
-				.brand("Gallo").groceryChain("Eroski").build();
-		tomatico = Product.builder().productName("Tomatico").description("Tomatico rico rico").price(4.75)
+		macarrones = Product.builder().productId(1L).productName("Macarrones").description("Macarrones ricos")
+				.price(3.45).brand("Gallo").groceryChain("Eroski").build();
+		tomatico = Product.builder().productId(2L).productName("Tomatico").description("Tomatico rico rico").price(4.75)
 				.brand("Heinz").groceryChain("Eroski").build();
-		alcachofas = Product.builder().productName("Alcachofas").description("Mehhh").price(5.00).brand("Marca blanca")
-				.groceryChain("TodoTodo").build();
+		alcachofas = Product.builder().productId(3L).productName("Alcachofas").description("Mehhh").price(5.00)
+				.brand("Marca blanca").groceryChain("TodoTodo").build();
 	}
 
 	@Test
@@ -81,8 +81,8 @@ public class ProductServiceTest {
 
 		// Act
 
-		Page<Product> returnedPageProduct = productService.getProductsBySpecification("a", "a", null, null, "a", "a", null,
-				0, 10, orderList);
+		Page<Product> returnedPageProduct = productService.getProductsBySpecification("a", "a", null, null, "a", "a",
+				null, 0, 10, orderList);
 
 		// Assert
 
@@ -113,6 +113,32 @@ public class ProductServiceTest {
 		assertThat(returnedPageProduct.getContent()).contains(macarrones);
 		assertThat(returnedPageProduct.getContent()).doesNotContain(tomatico);
 		assertThat(returnedPageProduct.getContent()).doesNotContain(alcachofas);
+	}
+
+	@Test
+	void ProductService_GetProductById_ReturnProduct() {
+		// Arrange
+		Long id = macarrones.getProductId();
+		when(productRepository.findById(id)).thenReturn(Optional.ofNullable(macarrones));
+
+		// Act
+		Product obtainedProduct = productService.getProductById(id);
+
+		// Assert
+		verify(productRepository, times(1)).findById(id);
+		assertThat(obtainedProduct).isNotNull();
+
+	}
+
+	@Test
+	void ProductService_GetProductById_ThrowsExceptionIfNotFound() {
+		// Arrange
+		Long id = macarrones.getProductId();
+		when(productRepository.findById(id)).thenReturn(Optional.empty());
+
+		// Act and Assert
+		assertThrows(ResourceNotFoundException.class, () -> productService.getProductById(id));
+		verify(productRepository, times(1)).findById(id);
 	}
 
 	@Test

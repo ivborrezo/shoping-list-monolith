@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.ivborrezo.shoppinglistmonolith.exception.ResourceNotFoundException;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTO;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.product.dto.ProductOutputDTO;
@@ -84,7 +85,7 @@ public class ProductControllerTest {
 		response.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(3));
 	}
-	
+
 	@Test
 	void ProductController_GetProductsBySpecification__ReturnResponseEntity500WhenSortValueEmpty() throws Exception {
 		// Arrange
@@ -92,8 +93,62 @@ public class ProductControllerTest {
 		String sortField2 = "-description";
 
 		// Act
+		ResultActions response = mockMvc.perform(
+				MockMvcRequestBuilders.get("/api/v1/products?{sortField1},{sortField2}", sortField1, sortField2)
+						.contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+	}
+
+	@Test
+	void ProductController_GetProductById_ReturnResponseEntity200WithProduct() throws Exception {
+
+		// Arrange
+		when(productService.getProductById(any())).thenReturn(macarrones);
+
+		ProductOutputDTO macarronesOutputDto = new ProductOutputDTO(macarrones.getProductId(),
+				macarrones.getProductName(), macarrones.getDescription(), macarrones.getPrice(), macarrones.getBrand(),
+				macarrones.getGroceryChain());
+
+		when(productOutputDTOMapper.apply(any())).thenReturn(macarronesOutputDto);
+
+		// Act
 		ResultActions response = mockMvc
-				.perform(MockMvcRequestBuilders.get("/api/v1/products?{sortField1},{sortField2}", sortField1, sortField2).contentType(MediaType.APPLICATION_JSON));
+				.perform(MockMvcRequestBuilders.get("/api/v1/products/1").contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(macarrones.getProductId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(macarrones.getProductName()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(macarrones.getDescription()));
+	}
+
+	@Test
+	void ProductController_GetProductById_WhenNotFoudReturnResponseEntity404() throws Exception {
+		// Arrange
+		Long id = 1L;
+		when(productService.getProductById(any())).thenThrow(ResourceNotFoundException.class);
+
+		// Act
+		ResultActions response = mockMvc.perform(
+				MockMvcRequestBuilders.get("/api/v1/products/{id}", id).contentType(MediaType.APPLICATION_JSON));
+
+		// Assert
+		response.andExpect(MockMvcResultMatchers.status().isNotFound());
+
+	}
+
+	@Test
+	void ProductController_GetProductById_WhenBadUrlResponseEntity500() throws Exception {
+		// Arrange
+		Long id = 1L;
+		when(productService.getProductById(id)).thenThrow(NumberFormatException.class);
+
+		// Act
+		ResultActions response = mockMvc
+				.perform(MockMvcRequestBuilders.get("/api/v1/users/{id}", id).contentType(MediaType.APPLICATION_JSON));
 
 		// Assert
 		response.andExpect(MockMvcResultMatchers.status().isInternalServerError());

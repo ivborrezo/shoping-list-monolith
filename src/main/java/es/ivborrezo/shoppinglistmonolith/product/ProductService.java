@@ -1,6 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.product;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -99,6 +100,29 @@ public class ProductService {
 				groceryChain, categoryIds, pageNumber, pageSize, orderList);
 
 		return pageProducts;
+	}
+
+	/**
+     * Retrieves a product by its ID.
+     *
+     * @param id The ID of the product to retrieve.
+     * @return The product with the specified ID.
+     * @throws ResourceNotFoundException if no product is found with the given ID.
+     */
+	public Product getProductById(Long id) {
+
+		logger.trace("Attempting to retrieve product with ID: {}", id);
+
+		Optional<Product> optionalProduct = productRepository.findById(id);
+		if (optionalProduct.isPresent()) {
+			Product product = optionalProduct.get();
+			logger.info("Product found with ID {}: {}", id, product);
+			return product;
+		} else {
+			String errorMessage = String.format("Product not found with ID: %d", id);
+			logger.error(errorMessage);
+			throw new ResourceNotFoundException(errorMessage, "getProductById", "id", id.toString());
+		}
 	}
 
 	/**
