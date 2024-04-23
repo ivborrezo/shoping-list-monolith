@@ -31,7 +31,7 @@ import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
 public class UserController {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-	
+
 	private UserService userService;
 
 	private UserInputDTOMapper userInputDTOMapper;
@@ -83,11 +83,13 @@ public class UserController {
 			@RequestParam(defaultValue = Constants.EMPTY) String phoneNumberFilter,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "") List<String> sort) {
-		
+
 		// Convert sorting criteria to Spring Data JPA's Sort.Order objects
-		List<Sort.Order> orderList = CriteriaOrderConverter.createAndMapSortOrder(sort, UserOutputDTOMapper.getFieldMappings());
-		
-		// Retrieve a page of UserOutputDTO objects based on specified filters and sorting criteria
+		List<Sort.Order> orderList = CriteriaOrderConverter.createAndMapSortOrder(sort,
+				UserOutputDTOMapper.getFieldMappings());
+
+		// Retrieve a page of UserOutputDTO objects based on specified filters and
+		// sorting criteria
 		Page<UserOutputDTO> pageUserDTO = userService
 				.getUsersBySpecification(userFilter, emailFilter, firstNameFilter, lastNameFilter,
 						dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, orderList)
@@ -97,14 +99,23 @@ public class UserController {
 				"Retrieved {} users with filters: userFilter={}, emailFilter={}, firstNameFilter={}, lastNameFilter={}, dateOfBirthGreaterFilter={}, dateOfBirthLessFilter={}, phoneNumberFilter={}, page={}, size={}, sort={}",
 				pageUserDTO.getNumberOfElements(), userFilter, emailFilter, firstNameFilter, lastNameFilter,
 				dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, sort);
-		
+
 		return new ResponseEntity<>(pageUserDTO, HttpStatus.OK);
 	}
 
+	/**
+	 * Retrieves a user by their ID.
+	 *
+	 * @param id The ID of the user to retrieve.
+	 * @return ResponseEntity containing the UserOutputDTO.
+	 */
 	@RequestMapping("users/{id}")
 	public ResponseEntity<UserOutputDTO> getUserById(@PathVariable Long id) {
 
+		logger.info("Retrieving user with ID: {}", id);
+
 		UserOutputDTO userDTO = userOutputDTOMapper.apply(userService.getUserById(id));
+		logger.info("Retrieved user with ID: {}", id);
 
 		return new ResponseEntity<>(userDTO, HttpStatus.OK);
 	}
