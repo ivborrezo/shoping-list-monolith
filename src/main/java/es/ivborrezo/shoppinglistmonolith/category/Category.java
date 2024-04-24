@@ -2,23 +2,24 @@ package es.ivborrezo.shoppinglistmonolith.category;
 
 import java.util.List;
 
-import es.ivborrezo.shoppinglistmonolith.color.Color;
 import es.ivborrezo.shoppinglistmonolith.product.Product;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category {
 
 	@Id
@@ -29,8 +30,7 @@ public class Category {
 	@NotBlank(message = "Name can not be null")
 	private String categoryName;
 
-	@Enumerated(EnumType.STRING)
-	private Color color;
+	private String color;
 
 	@ManyToMany(mappedBy = "categoryList")
 	private List<Product> productList;
