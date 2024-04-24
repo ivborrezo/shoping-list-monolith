@@ -230,7 +230,7 @@ VALUES
     ('Household Cleaning', '2024-06-28 10:20:00', 39);
     
 -- Insert examples into the category table
-INSERT INTO category (name, color)
+INSERT INTO category (category_name, color)
 VALUES 
     ('Dairy', 'Blue'),
     ('Vegetables', 'Green'),

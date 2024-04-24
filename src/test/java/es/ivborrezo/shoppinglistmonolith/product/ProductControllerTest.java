@@ -110,7 +110,7 @@ public class ProductControllerTest {
 
 		ProductOutputDTO macarronesOutputDto = new ProductOutputDTO(macarrones.getProductId(),
 				macarrones.getProductName(), macarrones.getDescription(), macarrones.getPrice(), macarrones.getBrand(),
-				macarrones.getGroceryChain());
+				macarrones.getGroceryChain(), null);
 
 		when(productOutputDTOMapper.apply(any())).thenReturn(macarronesOutputDto);
 
@@ -197,7 +197,7 @@ public class ProductControllerTest {
 
 		ProductOutputDTO macarronesOutputDTO = new ProductOutputDTO(macarrones.getProductId(),
 				macarrones.getProductName(), macarrones.getDescription(), macarrones.getPrice(), macarrones.getBrand(),
-				macarrones.getGroceryChain());
+				macarrones.getGroceryChain(), null);
 
 		when(productOutputDTOMapper.apply(macarrones)).thenReturn(macarronesOutputDTO);
 

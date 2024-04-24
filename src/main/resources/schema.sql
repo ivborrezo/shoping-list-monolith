@@ -49,7 +49,7 @@ CREATE SEQUENCE category_category_id_seq
 
 CREATE TABLE category (
     category_id BIGINT default NEXTVAL('category_category_id_seq') PRIMARY KEY,
-    name VARCHAR NOT NULL,
+    category_name VARCHAR NOT NULL,
     color VARCHAR
 );
 

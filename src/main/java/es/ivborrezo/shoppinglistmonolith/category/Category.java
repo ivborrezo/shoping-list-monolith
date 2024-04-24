@@ -27,7 +27,7 @@ public class Category {
 	private Long categoryId;
 
 	@NotBlank(message = "Name can not be null")
-	private String name;
+	private String categoryName;
 
 	@Enumerated(EnumType.STRING)
 	private Color color;
