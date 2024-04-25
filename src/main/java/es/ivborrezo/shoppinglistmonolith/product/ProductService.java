@@ -116,7 +116,7 @@ public class ProductService {
 		Optional<Product> optionalProduct = productRepository.findById(id);
 		if (optionalProduct.isPresent()) {
 			Product product = optionalProduct.get();
-			logger.info("Product found with ID {}: {}", id, product);
+			logger.info("Product found with ID {}", id);
 			return product;
 		} else {
 			String errorMessage = String.format("Product not found with ID: %d", id);

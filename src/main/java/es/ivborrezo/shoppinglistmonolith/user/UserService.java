@@ -106,7 +106,7 @@ public class UserService {
 		Optional<User> optionalUser = userRepository.findById(id);
 		if (optionalUser.isPresent()) {
 			User user = optionalUser.get();
-			logger.trace("User found with ID {}: {}", id, user);
+			logger.trace("User found with ID {}", id);
 			return user;
 		} else {
 			String errorMessage = String.format("User not found with ID: %d", id);
