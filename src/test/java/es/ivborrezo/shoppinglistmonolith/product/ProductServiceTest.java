@@ -54,17 +54,24 @@ public class ProductServiceTest {
 	private Product macarrones;
 	private Product tomatico;
 	private Product alcachofas;
+	
+	Category rico;
+	Category verde;
 
 	@BeforeEach
 	public void setupTestData() {
 		// Arrange
 
+		rico = Category.builder().categoryId(1L).categoryName("rico").build();
+		verde = Category.builder().categoryId(2L).categoryName("verde").build();
+		
+		
 		macarrones = Product.builder().productId(1L).productName("Macarrones").description("Macarrones ricos")
-				.price(3.45).brand("Gallo").groceryChain("Eroski").build();
+				.price(3.45).brand("Gallo").groceryChain("Eroski").categoryList(Arrays.asList(rico)).build();
 		tomatico = Product.builder().productId(2L).productName("Tomatico").description("Tomatico rico rico").price(4.75)
-				.brand("Heinz").groceryChain("Eroski").build();
+				.brand("Heinz").groceryChain("Eroski").categoryList(Arrays.asList(rico, verde)).build();
 		alcachofas = Product.builder().productId(3L).productName("Alcachofas").description("Mehhh").price(5.00)
-				.brand("Marca blanca").groceryChain("TodoTodo").build();
+				.brand("Marca blanca").groceryChain("TodoTodo").categoryList(Arrays.asList(verde)).build();
 	}
 
 	@Test
@@ -127,6 +134,8 @@ public class ProductServiceTest {
 		// Assert
 		verify(productRepository, times(1)).findById(id);
 		assertThat(obtainedProduct).isNotNull();
+		assertThat(obtainedProduct.getCategoryList()).contains(rico);
+		assertThat(obtainedProduct.getCategoryList()).doesNotContain(verde);
 
 	}
 
@@ -197,6 +206,7 @@ public class ProductServiceTest {
 		Long idUser = elyoya.getUserId();
 
 		when(userRepository.findById(idUser)).thenReturn(Optional.ofNullable(elyoya));
+		when(categoryRepository.existsById(any())).thenReturn(true);
 		when(productRepository.save(any())).thenReturn(macarrones);
 
 		// Act
@@ -204,7 +214,7 @@ public class ProductServiceTest {
 
 		// Assert
 		verify(userRepository, times(1)).findById(any());
-		verify(categoryRepository, times(0)).existsById(any());
+		verify(categoryRepository, times(1)).existsById(any());
 		verify(productRepository, times(1)).save(any());
 		assertThat(obtainedProduct).isEqualTo(macarrones);
 		assertThat(macarrones.getUser().getUserId()).isEqualTo(idUser);
