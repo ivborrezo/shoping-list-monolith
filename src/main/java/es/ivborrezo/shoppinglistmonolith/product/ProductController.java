@@ -79,6 +79,7 @@ public class ProductController {
 			@RequestParam(defaultValue = Constants.EMPTY) String brandFilter,
 			@RequestParam(defaultValue = Constants.EMPTY) String groceryChainFilter,
 			@RequestParam(defaultValue = Constants.EMPTY) Set<Long> categoryIdsFilter,
+			@RequestParam(defaultValue = Constants.EMPTY) String categoryNameFilter,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "") List<String> sort) {
 
@@ -88,8 +89,9 @@ public class ProductController {
 
 		// Retrieve a page of ProductOutputDTO objects based on specified filters and
 		// sorting criteria
-		Page<ProductOutputDTO> pageProductDTO = productService.getProductsBySpecification(nameFilter, descriptionFilter,
-				priceGreater, priceLess, brandFilter, groceryChainFilter, categoryIdsFilter, page, size, orderList)
+		Page<ProductOutputDTO> pageProductDTO = productService
+				.getProductsBySpecification(nameFilter, descriptionFilter, priceGreater, priceLess, brandFilter,
+						groceryChainFilter, categoryIdsFilter, categoryNameFilter, page, size, orderList)
 				.map(this.productOutputDTOMapper);
 
 		logger.info(

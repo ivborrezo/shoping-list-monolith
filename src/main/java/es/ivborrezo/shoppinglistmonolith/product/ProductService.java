@@ -60,7 +60,7 @@ public class ProductService {
 	 * @return A page of products based on the specified criteria.
 	 */
 	public Page<Product> getProductsBySpecification(String productName, String description, Double priceGreater,
-			Double priceLess, String brand, String groceryChain, Set<Long> categoryIds, int pageNumber, int pageSize,
+			Double priceLess, String brand, String groceryChain, Set<Long> categoryIds, String categoryName, int pageNumber, int pageSize,
 			List<Sort.Order> orderList) {
 
 		// Create pageable object for pagination and sorting
@@ -91,8 +91,8 @@ public class ProductService {
 //		if (categoryIds != null && categoryIds.size() > 0)
 //			spec = spec.and(ProductSpecifications.byCategoryIds(categoryIds));
 		
-//		spec = spec.and(ProductSpecifications.likeCategoryName("f"));
-//		spec = spec.and(ProductSpecifications.likeCategoryId(1L));
+		if (categoryName != null && !categoryName.isEmpty())
+			spec = spec.and(ProductSpecifications.likeCategoryName(categoryName));
 
 		// Retrieve products from the repository based on the specification and pageable
 		Page<Product> pageProducts = productRepository.findAll(spec, pageable);

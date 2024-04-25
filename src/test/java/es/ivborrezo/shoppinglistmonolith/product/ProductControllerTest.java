@@ -74,7 +74,7 @@ public class ProductControllerTest {
 		PageRequest pageRequest = PageRequest.of(0, productList.size());
 		Page<Product> productPage = new PageImpl<Product>(productList, pageRequest, productList.size());
 
-		when(productService.getProductsBySpecification(any(), any(), any(), any(), any(), any(), any(), anyInt(),
+		when(productService.getProductsBySpecification(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(),
 				anyInt(), any())).thenReturn(productPage);
 
 		// Act

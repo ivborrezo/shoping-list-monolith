@@ -1,6 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.product;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -52,24 +53,15 @@ public class ProductSpecifications {
 //        return (root, query, criteriaBuilder) -> {
 //            query.distinct(true); // Ensures that duplicate results are eliminated
 //            Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
-//            return categoryJoin.get("categoryId").in(categoryIds);
+//            
+//            List<Predicate> predicates = categoryIds.stream()
+//                    .map(categoryId -> criteriaBuilder.equal(categoryJoin.get("categoryId"), categoryId))
+//                    .toList();
+//
+//            // Combine all predicates with AND operation
+//             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 //        };
 //    }
-	public static Specification<Product> byCategoryIds(Set<Long> categoryIds) {
-        return (root, query, criteriaBuilder) -> {
-            query.distinct(true); // Ensures that duplicate results are eliminated
-            Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
-
-            // Create a predicate for each category ID
-            List<Predicate> predicates = new ArrayList<>();
-            for (Long categoryId : categoryIds) {
-                predicates.add(criteriaBuilder.equal(categoryJoin.get("categoryId"), categoryId));
-            }
-
-            // Combine all predicates with AND operation
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-    }
 	
 	public static Specification<Product> likeCategoryName(String categoryName) {
         return (root, query, criteriaBuilder) -> {

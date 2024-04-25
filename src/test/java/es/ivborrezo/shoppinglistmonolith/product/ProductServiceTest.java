@@ -11,8 +11,10 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,9 +89,9 @@ public class ProductServiceTest {
 				org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(pageProducts);
 
 		// Act
-
+		Set<Long> set = new HashSet<>(Arrays.asList(1L));
 		Page<Product> returnedPageProduct = productService.getProductsBySpecification("a", "a", null, null, "a", "a",
-				null, 0, 10, orderList);
+				set, "a", 0, 10, orderList);
 
 		// Assert
 
@@ -113,7 +115,7 @@ public class ProductServiceTest {
 		// Act
 
 		Page<Product> returnedPageProduct = productService.getProductsBySpecification(null, null, 100.0, 100.0, null,
-				null, null, 0, 10, orderList);
+				null, null, null, 0, 10, orderList);
 
 		// Assert
 		assertEquals(1, returnedPageProduct.getTotalElements());
