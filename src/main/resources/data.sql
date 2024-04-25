@@ -232,26 +232,26 @@ VALUES
 -- Insert examples into the category table
 INSERT INTO category (category_name, color)
 VALUES 
-    ('Dairy', 'Blue'),
-    ('Vegetables', 'Green'),
-    ('Meat', 'Red'),
-    ('Fish', 'Teal'),
-    ('Fruits', 'Orange'),
-    ('Bakery', 'Brown'),
-    ('Frozen Foods', 'Purple'),
-    ('Cereal & Breakfast', 'Yellow'),
-    ('Beverages', 'Pink'),
-    ('Pantry Staples', 'Gray'),
-    ('Snacks', 'Light Blue'),
-    ('Sweets & Desserts', 'Magenta'),
-    ('Condiments', 'Lime'),
-    ('Baking Essentials', 'Cyan'),
-    ('Canned Goods', 'Olive'),
-    ('Grains & Pasta', 'Tan'),
-    ('Health & Wellness', 'Sky Blue'),
-    ('Household Supplies', 'Lavender'),
-    ('Baby & Kids', 'Baby Blue'),
-    ('Pet Supplies', 'Dark Green');
+    ('Dairy', 'BLUE'),
+    ('Vegetables', 'GREEN'),
+    ('Meat', 'RED'),
+    ('Fish', 'TEAL'),
+    ('Fruits', 'ORANGE'),
+    ('Bakery', 'BROWN'),
+    ('Frozen Foods', 'PURPLE'),
+    ('Cereal & Breakfast', 'YELLOW'),
+    ('Beverages', 'PINK'),
+    ('Pantry Staples', 'GRAY'),
+    ('Snacks', 'LIGHT BLUE'),
+    ('Sweets & Desserts', 'MAGENTA'),
+    ('Condiments', 'LIME'),
+    ('Baking Essentials', 'CYAN'),
+    ('Canned Goods', 'OLIVE'),
+    ('Grains & Pasta', 'TAN'),
+    ('Health & Wellness', 'SKY BLUE'),
+    ('Household Supplies', 'LAVENDER'),
+    ('Baby & Kids', 'BABY BLUE'),
+    ('Pet Supplies', 'DARK GREEN');
 
    
 -- Insert examples into the product_category table

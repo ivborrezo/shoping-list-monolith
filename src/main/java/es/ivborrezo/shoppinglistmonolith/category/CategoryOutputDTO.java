@@ -1,5 +1,7 @@
 package es.ivborrezo.shoppinglistmonolith.category;
 
-public record CategoryOutputDTO(Long id, String name, String color) {
+import es.ivborrezo.shoppinglistmonolith.color.Color;
+
+public record CategoryOutputDTO(Long id, String name, Color color) {
 
 }
