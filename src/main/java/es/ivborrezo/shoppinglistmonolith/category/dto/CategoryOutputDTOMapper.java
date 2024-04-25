@@ -1,4 +1,4 @@
-package es.ivborrezo.shoppinglistmonolith.category;
+package es.ivborrezo.shoppinglistmonolith.category.dto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
 
+import es.ivborrezo.shoppinglistmonolith.category.Category;
 import lombok.Getter;
 
 @Service

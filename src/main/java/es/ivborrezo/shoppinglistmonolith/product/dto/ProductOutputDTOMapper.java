@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import es.ivborrezo.shoppinglistmonolith.category.CategoryOutputDTO;
-import es.ivborrezo.shoppinglistmonolith.category.CategoryOutputDTOMapper;
+import es.ivborrezo.shoppinglistmonolith.category.dto.CategoryOutputDTO;
+import es.ivborrezo.shoppinglistmonolith.category.dto.CategoryOutputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.product.Product;
 import lombok.Getter;
 

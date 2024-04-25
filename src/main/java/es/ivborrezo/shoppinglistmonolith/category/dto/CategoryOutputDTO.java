@@ -1,4 +1,4 @@
-package es.ivborrezo.shoppinglistmonolith.category;
+package es.ivborrezo.shoppinglistmonolith.category.dto;
 
 import es.ivborrezo.shoppinglistmonolith.color.Color;
 
