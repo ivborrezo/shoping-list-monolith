@@ -1,9 +1,16 @@
 package es.ivborrezo.shoppinglistmonolith.product;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import es.ivborrezo.shoppinglistmonolith.category.Category;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 
 public class ProductSpecifications {
 	public static Specification<Product> likeProductName(String productName) {
@@ -40,5 +47,36 @@ public class ProductSpecifications {
 			return category.in(categoryId);
 		};
 	}
+	
+//	public static Specification<Product> byCategoryIds(Set<Long> categoryIds) {
+//        return (root, query, criteriaBuilder) -> {
+//            query.distinct(true); // Ensures that duplicate results are eliminated
+//            Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
+//            return categoryJoin.get("categoryId").in(categoryIds);
+//        };
+//    }
+	public static Specification<Product> byCategoryIds(Set<Long> categoryIds) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true); // Ensures that duplicate results are eliminated
+            Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
+
+            // Create a predicate for each category ID
+            List<Predicate> predicates = new ArrayList<>();
+            for (Long categoryId : categoryIds) {
+                predicates.add(criteriaBuilder.equal(categoryJoin.get("categoryId"), categoryId));
+            }
+
+            // Combine all predicates with AND operation
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+	
+	public static Specification<Product> likeCategoryName(String categoryName) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
+            return criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get("categoryName")),
+                    "%" + categoryName.toLowerCase() + "%");
+        };
+    }
 
 }

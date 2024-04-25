@@ -89,7 +89,10 @@ public class ProductService {
 			spec = spec.and(ProductSpecifications.likeGroceryChain(groceryChain));
 
 //		if (categoryIds != null && categoryIds.size() > 0)
-//			spec = spec.and(ProductSpecifications.likeCategory(categoryIds));
+//			spec = spec.and(ProductSpecifications.byCategoryIds(categoryIds));
+		
+//		spec = spec.and(ProductSpecifications.likeCategoryName("f"));
+//		spec = spec.and(ProductSpecifications.likeCategoryId(1L));
 
 		// Retrieve products from the repository based on the specification and pageable
 		Page<Product> pageProducts = productRepository.findAll(spec, pageable);
