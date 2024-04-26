@@ -57,8 +57,8 @@ public class ProductServiceTest {
 	private Product tomatico;
 	private Product alcachofas;
 	
-	Category rico;
-	Category verde;
+	private Category rico;
+	private Category verde;
 
 	@BeforeEach
 	public void setupTestData() {
