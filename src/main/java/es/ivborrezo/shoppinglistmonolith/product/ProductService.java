@@ -60,8 +60,8 @@ public class ProductService {
 	 * @return A page of products based on the specified criteria.
 	 */
 	public Page<Product> getProductsBySpecification(String productName, String description, Double priceGreater,
-			Double priceLess, String brand, String groceryChain, Set<Long> categoryIds, String categoryName, int pageNumber, int pageSize,
-			List<Sort.Order> orderList) {
+			Double priceLess, String brand, String groceryChain, Set<Long> categoryIds, String categoryName,
+			int pageNumber, int pageSize, List<Sort.Order> orderList) {
 
 		// Create pageable object for pagination and sorting
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderList));
@@ -88,9 +88,12 @@ public class ProductService {
 		if (groceryChain != null && !groceryChain.isEmpty())
 			spec = spec.and(ProductSpecifications.likeGroceryChain(groceryChain));
 
-//		if (categoryIds != null && categoryIds.size() > 0)
-//			spec = spec.and(ProductSpecifications.byCategoryIds(categoryIds));
-		
+		if (categoryIds != null && categoryIds.size() > 0) {
+			for (Long id : categoryIds) {
+				spec = spec.and(ProductSpecifications.byCategoryId(id));
+			}
+		}
+
 		if (categoryName != null && !categoryName.isEmpty())
 			spec = spec.and(ProductSpecifications.likeCategoryName(categoryName));
 

@@ -1,7 +1,5 @@
 package es.ivborrezo.shoppinglistmonolith.product;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -44,31 +42,43 @@ public class ProductSpecifications {
 
 	public static Specification<Product> likeCategory(String categoryId) {
 		return (root, query, criteriaBuilder) -> {
-			final Path<Category> category = root.<Category> get("category");
+			final Path<Category> category = root.<Category>get("category");
 			return category.in(categoryId);
 		};
 	}
-	
-//	public static Specification<Product> byCategoryIds(Set<Long> categoryIds) {
-//        return (root, query, criteriaBuilder) -> {
-//            query.distinct(true); // Ensures that duplicate results are eliminated
-//            Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
-//            
-//            List<Predicate> predicates = categoryIds.stream()
-//                    .map(categoryId -> criteriaBuilder.equal(categoryJoin.get("categoryId"), categoryId))
-//                    .toList();
-//
-//            // Combine all predicates with AND operation
-//             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-//        };
-//    }
-	
+
+	/**
+	 * IMPORTANT: It doesn't work correctly if invoked by a specification.and().
+	 * Doing nested ands doesn't work. To do that use byCategoryId(Long categoryId)
+	 * instead
+	 */
+	public static Specification<Product> byCategoryIds(Set<Long> categoryIds) {
+		return (root, query, criteriaBuilder) -> {
+			query.distinct(true); // Ensures that duplicate results are eliminated
+			Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
+
+			List<Predicate> predicates = categoryIds.stream()
+					.map(categoryId -> criteriaBuilder.equal(categoryJoin.get("categoryId"), categoryId)).toList();
+
+			// Combine all predicates with AND operation
+			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+		};
+	}
+
+	public static Specification<Product> byCategoryId(Long categoryId) {
+		return (root, query, criteriaBuilder) -> {
+			Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
+
+			return criteriaBuilder.equal(categoryJoin.get("categoryId"), categoryId);
+		};
+	}
+
 	public static Specification<Product> likeCategoryName(String categoryName) {
-        return (root, query, criteriaBuilder) -> {
-            Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
-            return criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get("categoryName")),
-                    "%" + categoryName.toLowerCase() + "%");
-        };
-    }
+		return (root, query, criteriaBuilder) -> {
+			Join<Product, Category> categoryJoin = root.join("categoryList", JoinType.INNER);
+			return criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get("categoryName")),
+					"%" + categoryName.toLowerCase() + "%");
+		};
+	}
 
 }
