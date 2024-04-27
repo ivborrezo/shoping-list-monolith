@@ -3,6 +3,8 @@ package es.ivborrezo.shoppinglistmonolith.user;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -78,6 +80,7 @@ public class UserControllerTest {
 				.password("asd").dateOfBirth(dateMyrwn).build();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	void UserController_GetUsersBySpecification_ReturnResponseEntity200WithPageOfUsers() throws Exception {
 		// Arrange
@@ -89,8 +92,8 @@ public class UserControllerTest {
 		// Create a Page<User> using PageImpl with the userList and pageRequest
 		Page<User> userPage = new PageImpl<>(userList, pageRequest, userList.size());
 
-		when(userService.getUsersBySpecification(any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any()))
-				.thenReturn(userPage);
+		when(userService.getUsersBySpecification(any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(),
+				any())).thenReturn(userPage);
 
 		// Act
 		ResultActions response = mockMvc
@@ -98,8 +101,10 @@ public class UserControllerTest {
 
 		// Assert
 		response.andExpect(MockMvcResultMatchers.status().isOk());
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(2));
 
+		verify(userService, times(1)).getUsersBySpecification(any(), any(), any(), any(), any(), any(), any(), anyInt(),
+				anyInt(), any());
+		verify(pagedResourcesAssembler, times(1)).toModel(any(Page.class), any(UserOutputDTOModelAssembler.class));
 	}
 	
 	@Test
@@ -138,7 +143,7 @@ public class UserControllerTest {
 //				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Elyoya"))
 //				.andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist())
 //				.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("elyoya@gmail.com"));
-
+		verify(userService, times(1)).getUserById(id);
 	}
 
 	@Test
