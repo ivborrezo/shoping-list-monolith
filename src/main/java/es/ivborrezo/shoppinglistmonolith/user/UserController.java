@@ -59,9 +59,9 @@ public class UserController {
 	public ResponseEntity<Page<UserOutputDTO>> getAllUsers(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "3") int size) {
 
-		Page<UserOutputDTO> pageUserDTO = userService.getAllUsers(page, size).map(this.userOutputDTOMapper);
+		Page<UserOutputDTO> PageUserDTO = userService.getAllUsers(page, size).map(this.userOutputDTOMapper);
 
-		return new ResponseEntity<>(pageUserDTO, HttpStatus.OK);
+		return new ResponseEntity<>(PageUserDTO, HttpStatus.OK);
 	}
 
 	/**
@@ -99,6 +99,13 @@ public class UserController {
 		List<Sort.Order> orderList = CriteriaOrderConverter.createAndMapSortOrder(sort,
 				UserOutputDTOMapper.getFieldMappings());
 
+		// Retrieve a page of UserOutputDTO objects based on specified filters and
+		// sorting criteria
+		Page<UserOutputDTO> pageUserDTO = userService
+				.getUsersBySpecification(userFilter, emailFilter, firstNameFilter, lastNameFilter,
+						dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, orderList)
+				.map(this.userOutputDTOMapper);
+
 		// Retrieve a page of User objects based on specified filters and sorting
 		// criteria
 		Page<User> pageUser = userService.getUsersBySpecification(userFilter, emailFilter, firstNameFilter,
@@ -107,7 +114,7 @@ public class UserController {
 
 		logger.info(
 				"Retrieved {} users with filters: userFilter={}, emailFilter={}, firstNameFilter={}, lastNameFilter={}, dateOfBirthGreaterFilter={}, dateOfBirthLessFilter={}, phoneNumberFilter={}, page={}, size={}, sort={}",
-				pageUser.getNumberOfElements(), userFilter, emailFilter, firstNameFilter, lastNameFilter,
+				pageUserDTO.getNumberOfElements(), userFilter, emailFilter, firstNameFilter, lastNameFilter,
 				dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, sort);
 
 		// Convert User objects to UserOutputDTOModel and wrap them into a PagedModel in
