@@ -248,10 +248,10 @@ VALUES
     ('Baking Essentials', 'CYAN'),
     ('Canned Goods', 'OLIVE'),
     ('Grains & Pasta', 'TAN'),
-    ('Health & Wellness', 'SKY BLUE'),
+    ('Health & Wellness', 'SKY_BLUE'),
     ('Household Supplies', 'LAVENDER'),
-    ('Baby & Kids', 'BABY BLUE'),
-    ('Pet Supplies', 'DARK GREEN');
+    ('Baby & Kids', 'BABY_BLUE'),
+    ('Pet Supplies', 'DARK_GREEN');
 
    
 -- Insert examples into the product_category table
