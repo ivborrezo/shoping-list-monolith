@@ -16,7 +16,4 @@ public class Constants {
 	public static final Long LONG_ONE = 1L;
 	public static final Long LONG_TWO = 2L;
 	
-	public static final int DEFAULT_PAGE_NUMBER = 0;
-	public static final int DEFAULT_PAGE_SIZE = 10;
-	
 }

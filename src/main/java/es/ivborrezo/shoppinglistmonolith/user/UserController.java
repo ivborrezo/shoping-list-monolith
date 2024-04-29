@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +21,6 @@ import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserInputDTOMapper;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTO;
 import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOMapper;
-import es.ivborrezo.shoppinglistmonolith.user.dto.UserOutputDTOModel;
 import es.ivborrezo.shoppinglistmonolith.utils.Constants;
 import es.ivborrezo.shoppinglistmonolith.utils.CriteriaOrderConverter;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
@@ -41,18 +38,11 @@ public class UserController {
 
 	private UserOutputDTOMapper userOutputDTOMapper;
 
-	private UserOutputDTOModelAssembler userOutputDTOModelAssembler;
-
-	private PagedResourcesAssembler<User> pagedResourcesAssembler;
-
 	public UserController(UserService userService, UserInputDTOMapper userInputDTOMapper,
-			UserOutputDTOMapper userOutputDTOMapper, UserOutputDTOModelAssembler userOutputDTOModelAssembler,
-			PagedResourcesAssembler<User> pagedResourcesAssembler) {
+			UserOutputDTOMapper userOutputDTOMapper) {
 		this.userService = userService;
 		this.userInputDTOMapper = userInputDTOMapper;
 		this.userOutputDTOMapper = userOutputDTOMapper;
-		this.userOutputDTOModelAssembler = userOutputDTOModelAssembler;
-		this.pagedResourcesAssembler = pagedResourcesAssembler;
 	}
 
 	@RequestMapping("users/all")
@@ -65,26 +55,25 @@ public class UserController {
 	}
 
 	/**
-	 * Retrieves a paginated list of users based on specified filtering criteria and
-	 * sorting parameters. The response follows HATEOAS.
+	 * Retrieves a paginated list of users based on specified filters and sorting
+	 * criteria.
 	 *
-	 * @param userFilter               Filter string for user names.
-	 * @param emailFilter              Filter string for email addresses.
-	 * @param firstNameFilter          Filter string for first names.
-	 * @param lastNameFilter           Filter string for last names.
-	 * @param dateOfBirthGreaterFilter Filter for users with date of birth greater
-	 *                                 than or equal to this date.
-	 * @param dateOfBirthLessFilter    Filter for users with date of birth less than
-	 *                                 or equal to this date.
-	 * @param phoneNumberFilter        Filter string for phone numbers.
-	 * @param page                     Page number (zero-based).
-	 * @param size                     Size of each page.
-	 * @param sort                     List of sort criteria in the format
-	 *                                 "property,asc|desc".
-	 * @return ResponseEntity containing a PagedModel of UserOutputDTOModel.
+	 * @param userFilter               Filter string for username.
+	 * @param emailFilter              Filter string for email.
+	 * @param firstNameFilter          Filter string for first name.
+	 * @param lastNameFilter           Filter string for last name.
+	 * @param dateOfBirthGreaterFilter Filter for users born on or after a specified
+	 *                                 date.
+	 * @param dateOfBirthLessFilter    Filter for users born before a specified
+	 *                                 date.
+	 * @param phoneNumberFilter        Filter string for phone number.
+	 * @param page                     Page number for pagination (default is 0).
+	 * @param size                     Number of items per page (default is 10).
+	 * @param sort                     List of fields to sort by (default is empty).
+	 * @return ResponseEntity containing a page of UserOutputDTO objects.
 	 */
 	@RequestMapping("users")
-	public ResponseEntity<PagedModel<UserOutputDTOModel>> getUsersBySpecification(
+	public ResponseEntity<Page<UserOutputDTO>> getUsersBySpecification(
 			@RequestParam(defaultValue = Constants.EMPTY) String userFilter,
 			@RequestParam(defaultValue = Constants.EMPTY) String emailFilter,
 			@RequestParam(defaultValue = Constants.EMPTY) String firstNameFilter,
@@ -106,40 +95,29 @@ public class UserController {
 						dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, orderList)
 				.map(this.userOutputDTOMapper);
 
-		// Retrieve a page of User objects based on specified filters and sorting
-		// criteria
-		Page<User> pageUser = userService.getUsersBySpecification(userFilter, emailFilter, firstNameFilter,
-				lastNameFilter, dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size,
-				orderList);
-
 		logger.info(
 				"Retrieved {} users with filters: userFilter={}, emailFilter={}, firstNameFilter={}, lastNameFilter={}, dateOfBirthGreaterFilter={}, dateOfBirthLessFilter={}, phoneNumberFilter={}, page={}, size={}, sort={}",
 				pageUserDTO.getNumberOfElements(), userFilter, emailFilter, firstNameFilter, lastNameFilter,
 				dateOfBirthGreaterFilter, dateOfBirthLessFilter, phoneNumberFilter, page, size, sort);
 
-		// Convert User objects to UserOutputDTOModel and wrap them into a PagedModel in
-		// order to follow HATEOAS
-		PagedModel<UserOutputDTOModel> pageModelUserDTO = pagedResourcesAssembler.toModel(pageUser,
-				userOutputDTOModelAssembler);
-
-		return new ResponseEntity<>(pageModelUserDTO, HttpStatus.OK);
+		return new ResponseEntity<>(pageUserDTO, HttpStatus.OK);
 	}
 
 	/**
-	 * Retrieves a user by their unique identifier.
+	 * Retrieves a user by their ID.
 	 *
-	 * @param id The unique identifier of the user.
-	 * @return ResponseEntity containing the UserOutputDTOModel representing the retrieved user.
+	 * @param id The ID of the user to retrieve.
+	 * @return ResponseEntity containing the UserOutputDTO.
 	 */
 	@RequestMapping("users/{id}")
-	public ResponseEntity<UserOutputDTOModel> getUserById(@PathVariable Long id) {
+	public ResponseEntity<UserOutputDTO> getUserById(@PathVariable Long id) {
 
 		logger.info("Retrieving user with ID: {}", id);
-		
-		UserOutputDTOModel userDTOModel = userOutputDTOModelAssembler.toModel(userService.getUserById(id));
+
+		UserOutputDTO userDTO = userOutputDTOMapper.apply(userService.getUserById(id));
 		logger.info("Retrieved user with ID: {}", id);
 
-		return new ResponseEntity<>(userDTOModel, HttpStatus.OK);
+		return new ResponseEntity<>(userDTO, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "users")
@@ -165,7 +143,7 @@ public class UserController {
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "users/{id}")
-	public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
+	public ResponseEntity<Void> deketeUserById(@PathVariable Long id) {
 
 		userService.deleteUserById(id);
 

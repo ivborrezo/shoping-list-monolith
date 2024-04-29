@@ -21,7 +21,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -55,12 +54,6 @@ public class UserControllerTest {
 
 	@MockBean
 	private UserOutputDTOMapper userOutputDTOMapper;
-	
-	@MockBean
-	private UserOutputDTOModelAssembler userOutputDTOModelAssembler;
-	
-	@MockBean
-	private PagedResourcesAssembler<User> pagedResourcesAssembler;
 
 	private User elyoya;
 	private User myrwn;
@@ -97,8 +90,8 @@ public class UserControllerTest {
 				.perform(MockMvcRequestBuilders.get("/api/v1/users").contentType(MediaType.APPLICATION_JSON));
 
 		// Assert
-		response.andExpect(MockMvcResultMatchers.status().isOk());
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(2));
+		response.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(2));
 
 	}
 	
@@ -133,11 +126,11 @@ public class UserControllerTest {
 				.perform(MockMvcRequestBuilders.get("/api/v1/users/{id}", id).contentType(MediaType.APPLICATION_JSON));
 
 		// Assert
-		response.andExpect(MockMvcResultMatchers.status().isOk());
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Elyoya"))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("elyoya@gmail.com"));
+		response.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Elyoya"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.email").value("elyoya@gmail.com"));
 
 	}
 
