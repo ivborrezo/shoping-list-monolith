@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import es.ivborrezo.shoppinglistmonolith.validationgroups.BasicValidation;
 import es.ivborrezo.shoppinglistmonolith.validationgroups.PatchValidation;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ public class UserInputDTO {
 	private String name;
 	
 	@NotBlank(message = "email can not be empty", groups = BasicValidation.class)
+	@Column(unique=true)
 	@Email(groups = {BasicValidation.class, PatchValidation.class})
 	private String email;
 

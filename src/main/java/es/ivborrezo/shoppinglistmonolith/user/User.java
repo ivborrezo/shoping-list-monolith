@@ -2,13 +2,17 @@ package es.ivborrezo.shoppinglistmonolith.user;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import es.ivborrezo.shoppinglistmonolith.product.Product;
 import es.ivborrezo.shoppinglistmonolith.shoppinglist.ShoppingList;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,7 +39,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails{
 
 	@Id
 	@SequenceGenerator(name = "users_user_id_seq", sequenceName = "users_user_id_seq", allocationSize = 1)
@@ -46,6 +50,7 @@ public class User {
 	private String userName;
 
 	@NotBlank(message = "Email can not be null")
+	@Column(unique=true)
 	@Email(message = "Invalid Email format")
 	private String email;
 
@@ -94,4 +99,36 @@ public class User {
 		shoppingList.setOwner(this);
 		shoppingLists.add(shoppingList);
 	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of();
+	}
+	
+	@Override
+	public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+       return true;
+    }
+    @Override
+    public boolean isAccountNonLocked() {
+       return true;
+    }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

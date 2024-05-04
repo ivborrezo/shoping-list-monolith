@@ -161,7 +161,7 @@ public class ProductRepositoryTest {
 	@Test
 	public void ProductRepository_ExistsByIdAndUserId_ReturnTrue() {
 
-		Boolean exist = productRepository.existsByProductIdAndUserId(1L, 1L);
+		Boolean exist = productRepository.existsByProductIdAndUserId(macarrones.getProductId(), macarrones.getUser().getUserId());
 
 		assertThat(exist).isEqualTo(true);
 	}
