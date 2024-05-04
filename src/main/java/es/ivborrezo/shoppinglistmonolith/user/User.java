@@ -90,6 +90,14 @@ public class User implements UserDetails{
 	@JoinTable(name = "user_shopping_list_subscription", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "shopping_list_id"))
 	private List<ShoppingList> subscribedShoppingLists;
 	
+	public String getUserName() {
+		return this.userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 	public void addProduct(Product product) {
 		product.setUser(this);
 		productList.add(product);
@@ -110,10 +118,10 @@ public class User implements UserDetails{
         return password;
     }
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
+     @Override
+     public String getUsername() {
+         return email;
+     }
 
     @Override
     public boolean isAccountNonExpired() {
