@@ -7,13 +7,17 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import es.ivborrezo.shoppinglistmonolith.product.Product;
+import es.ivborrezo.shoppinglistmonolith.role.Role;
 import es.ivborrezo.shoppinglistmonolith.shoppinglist.ShoppingList;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -71,6 +75,9 @@ public class User implements UserDetails{
 	@Pattern(regexp = "^$|^(\\+[0-9]{1,3})?[0-9]{8,14}$", message = "Invalid mobile phone format")
 	private String phoneNumber;
 
+	@Enumerated(EnumType.STRING)
+	private Role role;
+
 	@Builder.Default
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Product> productList = new ArrayList<Product>();
@@ -88,7 +95,7 @@ public class User implements UserDetails{
         },
         targetEntity = ShoppingList.class)
 	@JoinTable(name = "user_shopping_list_subscription", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "shopping_list_id"))
-	private List<ShoppingList> subscribedShoppingLists;
+		private List<ShoppingList> subscribedShoppingLists;
 	
 	public String getUserName() {
 		return this.userName;
@@ -110,7 +117,7 @@ public class User implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of();
+		return List.of(new SimpleGrantedAuthority(role.name()));
 	}
 	
 	@Override
